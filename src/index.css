@@ -1,0 +1,290 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   NEXPRO FINTECH — design tokens
+   Brand: premium, trustworthy, modern financial platform.
+   ============================================================ */
+
+@theme inline {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* shadcn semantic tokens -> brand palette */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Nexpro brand-specific semantic colors */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-dark: var(--brand-primary-dark);
+  --color-brand-deep-indigo: var(--brand-deep-indigo);
+  --color-brand-cyan: var(--brand-cyan);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-surface: var(--warning-surface);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-surface: var(--error-surface);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-surface: var(--info-surface);
+
+  --color-app-dark-bg: var(--app-dark-bg);
+  --color-app-dark-surface: var(--app-dark-surface);
+
+  /* 8px spacing-aligned radius scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
+  --radius-hero: 20px;
+  --radius-2xl: 20px;
+
+  /* Ambient motion — auth brand panel, marketing hero. GPU-only
+     (transform/opacity), neutralized globally by prefers-reduced-motion. */
+  @keyframes aurora-drift-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(6%, 10%) scale(1.12); }
+  }
+  @keyframes aurora-drift-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-9%, -6%) scale(1.16); }
+  }
+  @keyframes aurora-drift-3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(7%, -9%) scale(1.08); }
+  }
+  @keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+  @keyframes grid-pan {
+    0% { background-position: 0 0; }
+    100% { background-position: 48px 48px; }
+  }
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  --animate-aurora-1: aurora-drift-1 22s ease-in-out infinite alternate;
+  --animate-aurora-2: aurora-drift-2 27s ease-in-out infinite alternate;
+  --animate-aurora-3: aurora-drift-3 19s ease-in-out infinite alternate;
+  --animate-float-y: float-y 6s ease-in-out infinite;
+  --animate-float-y-delayed: float-y 7s ease-in-out infinite 1.2s;
+  --animate-grid-pan: grid-pan 14s linear infinite;
+  --animate-page-enter: page-enter 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+:root {
+  /* Base surfaces */
+  --background: #f7f9fc;
+  --foreground: #101828;
+  --card: #ffffff;
+  --card-foreground: #101828;
+  --popover: #ffffff;
+  --popover-foreground: #101828;
+
+  /* Brand */
+  --brand-primary: #4f46e5;
+  --brand-primary-dark: #3730a3;
+  --brand-deep-indigo: #312e81;
+  --brand-cyan: #06b6d4;
+
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2ff;
+  --secondary-foreground: #312e81;
+  --muted: #f2f4f7;
+  --muted-foreground: #667085;
+  --accent: #ecfeff;
+  --accent-foreground: #0e7490;
+  --destructive: #f04438;
+  --destructive-foreground: #ffffff;
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #4f46e5;
+
+  /* Semantic status colors */
+  --success: #12b76a;
+  --success-foreground: #ffffff;
+  --success-surface: #ecfdf3;
+  --warning: #f79009;
+  --warning-foreground: #ffffff;
+  --warning-surface: #fffaeb;
+  --error: #f04438;
+  --error-foreground: #ffffff;
+  --error-surface: #fef3f2;
+  --info: #2e90fa;
+  --info-foreground: #ffffff;
+  --info-surface: #eff8ff;
+
+  /* Dark application surfaces (used for wallet cards, dark mode) */
+  --app-dark-bg: #0b1020;
+  --app-dark-surface: #111827;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #101828;
+  --sidebar-primary: #4f46e5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef2ff;
+  --sidebar-accent-foreground: #312e81;
+  --sidebar-border: #e4e7ec;
+  --sidebar-ring: #4f46e5;
+}
+
+.dark {
+  --background: #0b1020;
+  --foreground: #f0f2f8;
+  --card: #111827;
+  --card-foreground: #f0f2f8;
+  --popover: #111827;
+  --popover-foreground: #f0f2f8;
+
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2434;
+  --secondary-foreground: #c7d2fe;
+  --muted: #1a2030;
+  --muted-foreground: #94a3b8;
+  --accent: #0e3a44;
+  --accent-foreground: #67e8f9;
+  --destructive: #f04438;
+  --destructive-foreground: #ffffff;
+  --border: #232a3b;
+  --input: #232a3b;
+  --ring: #6366f1;
+
+  --success: #12b76a;
+  --success-foreground: #ffffff;
+  --success-surface: #0b2e21;
+  --warning: #f79009;
+  --warning-foreground: #ffffff;
+  --warning-surface: #3a2608;
+  --error: #f04438;
+  --error-foreground: #ffffff;
+  --error-surface: #3a1512;
+  --info: #2e90fa;
+  --info-foreground: #ffffff;
+  --info-surface: #0d2745;
+
+  --sidebar: #111827;
+  --sidebar-foreground: #f0f2f8;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e2434;
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-border: #232a3b;
+  --sidebar-ring: #6366f1;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  /* Primary brand gradient — hero sections, wallet cards, key CTAs only. */
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      var(--brand-deep-indigo) 0%,
+      var(--brand-primary) 55%,
+      var(--brand-cyan) 100%
+    );
+  }
+
+  /* Tabular figures for financial amounts — digits must align in tables. */
+  .font-tabular {
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Ambient color wash for app/portal shells — replaces flat white so the
+     product has depth at rest, not just on hover. Fixed + very low opacity
+     so it reads as atmosphere, not decoration. */
+  .bg-app-mesh {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(900px 500px at 100% -10%, color-mix(in oklch, var(--brand-cyan) 10%, transparent), transparent),
+      radial-gradient(700px 500px at -10% 15%, color-mix(in oklch, var(--brand-primary) 8%, transparent), transparent),
+      radial-gradient(800px 600px at 110% 110%, color-mix(in oklch, var(--brand-deep-indigo) 6%, transparent), transparent);
+    background-attachment: fixed;
+  }
+
+  /* Semantic tinted surfaces — soft gradient + matching border, used for
+     cards that should read as a category (warning/success/info/primary) at
+     a glance rather than plain white with a colored icon bolted on. */
+  .surface-tint-primary {
+    background-image: linear-gradient(145deg, color-mix(in oklch, var(--brand-primary) 7%, var(--card)), var(--card) 60%);
+    border-color: color-mix(in oklch, var(--brand-primary) 18%, var(--border));
+  }
+  .surface-tint-warning {
+    background-image: linear-gradient(145deg, color-mix(in oklch, var(--warning) 10%, var(--card)), var(--card) 60%);
+    border-color: color-mix(in oklch, var(--warning) 22%, var(--border));
+  }
+  .surface-tint-success {
+    background-image: linear-gradient(145deg, color-mix(in oklch, var(--success) 9%, var(--card)), var(--card) 60%);
+    border-color: color-mix(in oklch, var(--success) 20%, var(--border));
+  }
+  .surface-tint-info {
+    background-image: linear-gradient(145deg, color-mix(in oklch, var(--info) 9%, var(--card)), var(--card) 60%);
+    border-color: color-mix(in oklch, var(--info) 20%, var(--border));
+  }
+  .surface-tint-error {
+    background-image: linear-gradient(145deg, color-mix(in oklch, var(--error) 8%, var(--card)), var(--card) 60%);
+    border-color: color-mix(in oklch, var(--error) 18%, var(--border));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
