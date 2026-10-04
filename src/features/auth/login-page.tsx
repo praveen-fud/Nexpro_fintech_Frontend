@@ -129,14 +129,6 @@ export function LoginPage() {
             </Link>
           </p>
         </FormItem>
-
-        <FormItem>
-          <div className="mt-8 rounded-lg border border-border bg-muted/50 p-4 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">Demo accounts</p>
-            <p className="mt-1">customer@nexpro.test · ops@nexpro.test · admin@nexpro.test</p>
-            <p>Password: Password123</p>
-          </div>
-        </FormItem>
       </FormStagger>
     </AuthLayout>
   )
