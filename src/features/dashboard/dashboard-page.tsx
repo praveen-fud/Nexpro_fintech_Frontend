@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { PlusCircle, Receipt, Grid2x2, User, ArrowRight, ArrowDownLeft, ArrowUpRight, Inbox, Clock, Sparkles } from "lucide-react"
@@ -7,6 +8,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { EmptyState } from "@/components/shared/empty-state"
 import { ErrorState } from "@/components/shared/error-state"
 import { Stagger, StaggerItem } from "@/components/shared/motion"
+import { KycStatusBanner } from "@/components/shared/kyc-status-banner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { apiClient } from "@/lib/api-client"
@@ -14,7 +16,7 @@ import { formatCurrency, formatDate } from "@/lib/format"
 import { routes } from "@/lib/routes"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/features/auth/auth-context"
-import type { Transaction, Wallet } from "@/types/domain"
+import type { KycProfile, Transaction, Wallet } from "@/types/domain"
 
 function greeting(): string {
   const hour = new Date().getHours()
@@ -23,10 +25,11 @@ function greeting(): string {
   return "Good evening"
 }
 
-const quickActions = [
+function getQuickActions(addMoneyTo: string) {
+  return [
   {
     label: "Add Money",
-    to: routes.app.addMoney,
+    to: addMoneyTo,
     icon: PlusCircle,
     tone: "bg-gradient-to-br from-primary/15 to-brand-cyan/10 text-primary",
   },
@@ -48,7 +51,8 @@ const quickActions = [
     icon: User,
     tone: "bg-success-surface text-success",
   },
-]
+  ]
+}
 
 const TX_ICON_TONE: Record<Transaction["type"], string> = {
   FUNDING: "bg-success-surface text-success",
@@ -57,7 +61,7 @@ const TX_ICON_TONE: Record<Transaction["type"], string> = {
 }
 
 export function DashboardPage() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
 
   const walletQuery = useQuery({
     queryKey: ["wallet", "me"],
@@ -68,6 +72,22 @@ export function DashboardPage() {
     queryKey: ["transactions", "recent"],
     queryFn: async () => (await apiClient.get<Transaction[]>("/transactions", { params: { limit: 5 } })).data,
   })
+
+  const kycQuery = useQuery({
+    queryKey: ["kyc", "me"],
+    queryFn: async () => (await apiClient.get<KycProfile>("/kyc/me")).data,
+  })
+
+  // Picks up a status change from an out-of-band Ops decision made while
+  // this tab was already open — the auth context otherwise only refreshes
+  // at login/bootstrap.
+  useEffect(() => {
+    refreshUser()
+  }, [refreshUser])
+
+  const isKycApproved = user?.kycStatus === "APPROVED"
+  const addMoneyTo = isKycApproved ? routes.app.addMoney : routes.app.kycStatus
+  const quickActions = getQuickActions(addMoneyTo)
 
   return (
     <Stagger>
@@ -80,6 +100,12 @@ export function DashboardPage() {
       <StaggerItem>
         <p className="text-sm text-muted-foreground">Here's what's happening with your wallet.</p>
       </StaggerItem>
+
+      {kycQuery.data && kycQuery.data.status !== "APPROVED" && (
+        <StaggerItem className="mt-6">
+          <KycStatusBanner status={kycQuery.data.status} reviewNotes={kycQuery.data.reviewNotes} />
+        </StaggerItem>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <StaggerItem className="lg:col-span-2">
@@ -96,7 +122,7 @@ export function DashboardPage() {
           )}
           <div className="mt-4 flex flex-wrap gap-3">
             <Button size="lg" asChild>
-              <Link to={routes.app.addMoney}>
+              <Link to={addMoneyTo}>
                 <PlusCircle className="size-4" />
                 Add Money
               </Link>
@@ -182,7 +208,7 @@ export function DashboardPage() {
             description="Once you add money to your wallet, your funding history will appear here."
             action={
               <Button size="sm" asChild>
-                <Link to={routes.app.addMoney}>Add Money</Link>
+                <Link to={addMoneyTo}>Add Money</Link>
               </Button>
             }
           />

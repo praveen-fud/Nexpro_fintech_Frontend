@@ -113,6 +113,7 @@ export function FileUpload({
         id={inputId}
         type="file"
         accept={accept}
+        capture="environment"
         className="sr-only"
         onChange={(e) => validateAndSet(e.target.files?.[0])}
       />

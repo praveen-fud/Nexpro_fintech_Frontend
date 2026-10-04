@@ -1,6 +1,8 @@
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
-import { FileText } from "lucide-react"
+import { toast } from "sonner"
+import { Eye, FileText, Loader2 } from "lucide-react"
 import { PageHeader } from "@/components/shared/page-header"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { Timeline, type TimelineItem } from "@/components/shared/timeline"
@@ -8,7 +10,7 @@ import { EmptyState } from "@/components/shared/empty-state"
 import { ErrorState } from "@/components/shared/error-state"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { apiClient } from "@/lib/api-client"
+import { apiClient, ApiError } from "@/lib/api-client"
 import { formatDate } from "@/lib/format"
 import { routes } from "@/lib/routes"
 import type { KycProfile } from "@/types/domain"
@@ -64,10 +66,25 @@ const NEXT_ACTION: Record<KycProfile["status"], string> = {
 
 export function KycStatusPage() {
   const navigate = useNavigate()
+  const [viewingDocId, setViewingDocId] = useState<string | null>(null)
   const { data: profile, isLoading, isError, refetch } = useQuery({
     queryKey: ["kyc", "me"],
     queryFn: async () => (await apiClient.get<KycProfile>("/kyc/me")).data,
   })
+
+  const viewDocument = async (documentId: string) => {
+    setViewingDocId(documentId)
+    try {
+      const res = await apiClient.get(`/kyc/documents/${documentId}`, { responseType: "blob" })
+      const url = URL.createObjectURL(res.data as Blob)
+      window.open(url, "_blank", "noopener,noreferrer")
+      setTimeout(() => URL.revokeObjectURL(url), 30_000)
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not load this document.")
+    } finally {
+      setViewingDocId(null)
+    }
+  }
 
   return (
     <div>
@@ -130,7 +147,22 @@ export function KycStatusPage() {
                         <FileText className="size-4 shrink-0 text-muted-foreground" />
                         <span className="truncate text-sm text-foreground">{doc.fileName}</span>
                       </div>
-                      <StatusBadge status={doc.status} />
+                      <div className="flex shrink-0 items-center gap-3">
+                        <StatusBadge status={doc.status} />
+                        <button
+                          type="button"
+                          onClick={() => viewDocument(doc.id)}
+                          disabled={viewingDocId === doc.id}
+                          className="flex items-center gap-1 text-sm font-medium text-primary hover:underline disabled:opacity-50"
+                        >
+                          {viewingDocId === doc.id ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <Eye className="size-3.5" />
+                          )}
+                          View
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>

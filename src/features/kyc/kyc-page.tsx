@@ -1,21 +1,24 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useEffect, useRef, useState } from "react"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useNavigate } from "react-router-dom"
-import { ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react"
+import { AlertTriangle, ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Field, FieldLabel, FieldError, FieldGroup, FieldDescription } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { FlowLayout } from "@/layouts/flow-layout"
 import { Stepper, type StepperStep } from "@/components/shared/stepper"
 import { FileUpload } from "@/components/shared/file-upload"
 import { apiClient, ApiError } from "@/lib/api-client"
 import { routes } from "@/lib/routes"
+import { useAuth } from "@/features/auth/auth-context"
+import type { KycProfile } from "@/types/domain"
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Delhi", "Gujarat", "Karnataka", "Kerala", "Maharashtra",
@@ -23,8 +26,8 @@ const INDIAN_STATES = [
 ]
 
 const steps: StepperStep[] = [
-  { key: "personal", label: "Personal Information" },
   { key: "documents", label: "Identity Documents" },
+  { key: "personal", label: "Personal Information" },
   { key: "bank", label: "Bank Details" },
   { key: "verification", label: "Verification" },
 ]
@@ -55,6 +58,7 @@ type DocumentKey = "idProof" | "addressProof" | "panCard"
 
 export function KycPage() {
   const navigate = useNavigate()
+  const { refreshUser } = useAuth()
   const [stepIndex, setStepIndex] = useState(0)
   const [documents, setDocuments] = useState<Record<DocumentKey, File | null>>({
     idProof: null,
@@ -62,6 +66,12 @@ export function KycPage() {
     panCard: null,
   })
   const [declared, setDeclared] = useState(false)
+  const prefilledRef = useRef(false)
+
+  const { data: existingProfile } = useQuery({
+    queryKey: ["kyc", "me"],
+    queryFn: async () => (await apiClient.get<KycProfile>("/kyc/me")).data,
+  })
 
   const personalForm = useForm<PersonalForm>({
     resolver: zodResolver(personalSchema),
@@ -73,6 +83,30 @@ export function KycPage() {
     defaultValues: { accountHolderName: "", accountNumber: "", confirmAccountNumber: "", ifsc: "" },
   })
 
+  const selectedState = useWatch({ control: personalForm.control, name: "state" })
+
+  // Pre-fill from a prior (rejected / info-requested) submission exactly
+  // once — a later refetch (e.g. on window focus) must not clobber
+  // whatever the customer has already typed this session.
+  useEffect(() => {
+    if (!existingProfile || prefilledRef.current) return
+    prefilledRef.current = true
+    if (existingProfile.personalInfo) {
+      personalForm.reset(existingProfile.personalInfo)
+    }
+    if (existingProfile.bankAccount) {
+      bankForm.reset({
+        accountHolderName: existingProfile.bankAccount.accountHolderName,
+        accountNumber: "",
+        confirmAccountNumber: "",
+        ifsc: existingProfile.bankAccount.ifsc,
+      })
+    }
+  }, [existingProfile, personalForm, bankForm])
+
+  const needsFix =
+    existingProfile?.status === "REJECTED" || existingProfile?.status === "ADDITIONAL_INFORMATION_REQUIRED"
+
   const submitKyc = useMutation({
     mutationFn: async () => {
       const formData = new FormData()
@@ -83,8 +117,12 @@ export function KycPage() {
       if (documents.panCard) formData.append("panCard", documents.panCard)
       await apiClient.post("/kyc/submit", formData, { headers: { "Content-Type": "multipart/form-data" } })
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("KYC submitted for review")
+      // The route guard (KycGate) reads kycStatus straight from the auth
+      // context, which only refreshes at login/bootstrap otherwise — without
+      // this it would still see NOT_STARTED and bounce straight back here.
+      await refreshUser()
       navigate(routes.app.kycStatus)
     },
     onError: (err) => {
@@ -95,13 +133,13 @@ export function KycPage() {
   const documentsComplete = documents.idProof && documents.addressProof && documents.panCard
 
   const goNext = async () => {
-    if (stepIndex === 0) {
-      const valid = await personalForm.trigger()
-      if (!valid) return
-    }
-    if (stepIndex === 1 && !documentsComplete) {
+    if (stepIndex === 0 && !documentsComplete) {
       toast.error("Please upload all required documents to continue")
       return
+    }
+    if (stepIndex === 1) {
+      const valid = await personalForm.trigger()
+      if (!valid) return
     }
     if (stepIndex === 2) {
       const valid = await bankForm.trigger()
@@ -123,6 +161,43 @@ export function KycPage() {
       <Stepper steps={steps} currentIndex={stepIndex} className="mb-8" />
 
       {stepIndex === 0 && (
+        <FieldGroup>
+          {needsFix && (
+            <Alert variant="destructive">
+              <AlertTriangle />
+              <AlertTitle>
+                {existingProfile?.status === "REJECTED" ? "Verification was rejected" : "More information needed"}
+              </AlertTitle>
+              <AlertDescription>
+                {existingProfile?.reviewNotes ?? "Please review and resubmit your information."}
+              </AlertDescription>
+            </Alert>
+          )}
+          <FileUpload
+            label="Government ID Proof"
+            description="Aadhaar, Passport, or Voter ID"
+            value={documents.idProof}
+            onChange={(f) => setDocuments((d) => ({ ...d, idProof: f }))}
+          />
+          <FileUpload
+            label="Address Proof"
+            description="Utility bill or bank statement, not older than 3 months"
+            value={documents.addressProof}
+            onChange={(f) => setDocuments((d) => ({ ...d, addressProof: f }))}
+          />
+          <FileUpload
+            label="PAN Card"
+            description="Required for financial verification"
+            value={documents.panCard}
+            onChange={(f) => setDocuments((d) => ({ ...d, panCard: f }))}
+          />
+          <FieldDescription>
+            Documents are simulated uploads in this environment and are not verified by a third party.
+          </FieldDescription>
+        </FieldGroup>
+      )}
+
+      {stepIndex === 1 && (
         <form onSubmit={(e) => e.preventDefault()}>
           <FieldGroup>
             <Field data-invalid={!!personalForm.formState.errors.dateOfBirth}>
@@ -153,7 +228,10 @@ export function KycPage() {
 
             <Field data-invalid={!!personalForm.formState.errors.state}>
               <FieldLabel htmlFor="state">State</FieldLabel>
-              <Select onValueChange={(v) => personalForm.setValue("state", v, { shouldValidate: true })}>
+              <Select
+                value={selectedState}
+                onValueChange={(v) => personalForm.setValue("state", v, { shouldValidate: true })}
+              >
                 <SelectTrigger id="state" className="w-full">
                   <SelectValue placeholder="Select state" />
                 </SelectTrigger>
@@ -169,32 +247,6 @@ export function KycPage() {
             </Field>
           </FieldGroup>
         </form>
-      )}
-
-      {stepIndex === 1 && (
-        <FieldGroup>
-          <FileUpload
-            label="Government ID Proof"
-            description="Aadhaar, Passport, or Voter ID"
-            value={documents.idProof}
-            onChange={(f) => setDocuments((d) => ({ ...d, idProof: f }))}
-          />
-          <FileUpload
-            label="Address Proof"
-            description="Utility bill or bank statement, not older than 3 months"
-            value={documents.addressProof}
-            onChange={(f) => setDocuments((d) => ({ ...d, addressProof: f }))}
-          />
-          <FileUpload
-            label="PAN Card"
-            description="Required for financial verification"
-            value={documents.panCard}
-            onChange={(f) => setDocuments((d) => ({ ...d, panCard: f }))}
-          />
-          <FieldDescription>
-            Documents are simulated uploads in this environment and are not verified by a third party.
-          </FieldDescription>
-        </FieldGroup>
       )}
 
       {stepIndex === 2 && (
@@ -230,6 +282,14 @@ export function KycPage() {
       {stepIndex === 3 && (
         <div className="space-y-5">
           <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
+            <p className="text-sm font-semibold text-foreground">Documents</p>
+            <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+              <li>{documents.idProof?.name}</li>
+              <li>{documents.addressProof?.name}</li>
+              <li>{documents.panCard?.name}</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
             <p className="text-sm font-semibold text-foreground">Personal Information</p>
             <dl className="mt-3 space-y-2 text-sm">
               <div className="flex justify-between">
@@ -239,14 +299,6 @@ export function KycPage() {
                 </dd>
               </div>
             </dl>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
-            <p className="text-sm font-semibold text-foreground">Documents</p>
-            <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-              <li>{documents.idProof?.name}</li>
-              <li>{documents.addressProof?.name}</li>
-              <li>{documents.panCard?.name}</li>
-            </ul>
           </div>
           <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
             <p className="text-sm font-semibold text-foreground">Bank Details</p>

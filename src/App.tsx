@@ -2,6 +2,8 @@ import { lazy, Suspense, type ReactNode } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
 import { FullScreenLoader } from "@/components/shared/full-screen-loader"
 import { ProtectedRoute } from "@/app/guards/protected-route"
+import { KycGate } from "@/app/guards/kyc-gate"
+import { RequireApprovedKyc } from "@/app/guards/require-approved-kyc"
 import { MarketingLayout } from "@/layouts/marketing-layout"
 import { AppLayout } from "@/layouts/app-layout"
 import { OperationsLayout } from "@/layouts/operations-layout"
@@ -31,6 +33,8 @@ const SupportPage = lazy(() => import("@/features/support/support-page"))
 const OperationsOverviewPage = lazy(() => import("@/features/operations/operations-overview-page"))
 const FundingQueuePage = lazy(() => import("@/features/operations/funding-queue-page"))
 const FundingDetailPage = lazy(() => import("@/features/operations/funding-detail-page"))
+const KycQueuePage = lazy(() => import("@/features/operations/kyc-queue-page"))
+const KycDetailPage = lazy(() => import("@/features/operations/kyc-detail-page"))
 const OperationsPlaceholderPage = lazy(() => import("@/features/operations/operations-placeholder-page"))
 const AdminPlaceholderPage = lazy(() => import("@/features/admin/admin-placeholder-page"))
 
@@ -61,23 +65,29 @@ export default function App() {
       <Route path={routes.login} element={<Page><LoginPage /></Page>} />
 
       <Route element={<ProtectedRoute allowedRoles={["CUSTOMER"]} />}>
-        <Route path={routes.app.kyc} element={<Page><KycPage /></Page>} />
-        <Route path={routes.app.addMoney} element={<Page><AddMoneyPage /></Page>} />
-        <Route path={routes.app.addMoneyCreditCard} element={<Page><CreditCardFundingPage /></Page>} />
-        <Route path={routes.app.addMoneyUpi} element={<Page><UpiFundingPage /></Page>} />
-        <Route path={routes.app.addMoneyBankTransfer} element={<Page><BankTransferFundingPage /></Page>} />
-        <Route path="/app/funding-requests/:id" element={<Page><FundingRequestDetailPage /></Page>} />
-        <Route path="/app/funding-requests/:id/success" element={<Page><FundingSuccessPage /></Page>} />
-        <Route path="/app/transactions/:id" element={<Page><TransactionDetailPage /></Page>} />
+        <Route element={<KycGate />}>
+          <Route path={routes.app.kyc} element={<Page><KycPage /></Page>} />
 
-        <Route element={<AppLayout />}>
-          <Route path={routes.app.dashboard} element={<Page><DashboardPage /></Page>} />
-          <Route path={routes.app.kycStatus} element={<Page><KycStatusPage /></Page>} />
-          <Route path={routes.app.wallet} element={<Page><WalletPage /></Page>} />
-          <Route path={routes.app.transactions} element={<Page><TransactionsPage /></Page>} />
-          <Route path={routes.app.services} element={<Page><ServicesPage /></Page>} />
-          <Route path={routes.app.profile} element={<Page><ProfilePage /></Page>} />
-          <Route path={routes.app.support} element={<Page><SupportPage /></Page>} />
+          <Route element={<RequireApprovedKyc />}>
+            <Route path={routes.app.addMoney} element={<Page><AddMoneyPage /></Page>} />
+            <Route path={routes.app.addMoneyCreditCard} element={<Page><CreditCardFundingPage /></Page>} />
+            <Route path={routes.app.addMoneyUpi} element={<Page><UpiFundingPage /></Page>} />
+            <Route path={routes.app.addMoneyBankTransfer} element={<Page><BankTransferFundingPage /></Page>} />
+          </Route>
+
+          <Route path="/app/funding-requests/:id" element={<Page><FundingRequestDetailPage /></Page>} />
+          <Route path="/app/funding-requests/:id/success" element={<Page><FundingSuccessPage /></Page>} />
+          <Route path="/app/transactions/:id" element={<Page><TransactionDetailPage /></Page>} />
+
+          <Route element={<AppLayout />}>
+            <Route path={routes.app.dashboard} element={<Page><DashboardPage /></Page>} />
+            <Route path={routes.app.kycStatus} element={<Page><KycStatusPage /></Page>} />
+            <Route path={routes.app.wallet} element={<Page><WalletPage /></Page>} />
+            <Route path={routes.app.transactions} element={<Page><TransactionsPage /></Page>} />
+            <Route path={routes.app.services} element={<Page><ServicesPage /></Page>} />
+            <Route path={routes.app.profile} element={<Page><ProfilePage /></Page>} />
+            <Route path={routes.app.support} element={<Page><SupportPage /></Page>} />
+          </Route>
         </Route>
       </Route>
 
@@ -86,14 +96,8 @@ export default function App() {
           <Route path={routes.operations.overview} element={<Page><OperationsOverviewPage /></Page>} />
           <Route path={routes.operations.fundingQueue} element={<Page><FundingQueuePage /></Page>} />
           <Route path="/operations/funding/:id" element={<Page><FundingDetailPage /></Page>} />
-          <Route
-            path={routes.operations.kycQueue}
-            element={
-              <Page>
-                <OperationsPlaceholderPage title="KYC Review" description="Review customer identity verification submissions." />
-              </Page>
-            }
-          />
+          <Route path={routes.operations.kycQueue} element={<Page><KycQueuePage /></Page>} />
+          <Route path="/operations/kyc/:id" element={<Page><KycDetailPage /></Page>} />
           <Route
             path={routes.operations.customers}
             element={
