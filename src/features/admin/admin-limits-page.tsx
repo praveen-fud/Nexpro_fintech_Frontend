@@ -25,9 +25,9 @@ interface PlatformLimit {
 // ── Schema ────────────────────────────────────────────────────────────────────
 
 const editSchema = z.object({
-  perTransaction: z.coerce.number().positive("Must be greater than 0"),
-  daily: z.coerce.number().positive("Must be greater than 0"),
-  monthly: z.coerce.number().positive("Must be greater than 0"),
+  perTransaction: z.number().positive("Must be greater than 0"),
+  daily: z.number().positive("Must be greater than 0"),
+  monthly: z.number().positive("Must be greater than 0"),
 })
 
 type EditForm = z.infer<typeof editSchema>
@@ -144,17 +144,17 @@ export function AdminLimitsPage() {
           >
             <Field data-invalid={!!form.formState.errors.perTransaction}>
               <FieldLabel>Per Transaction (₹)</FieldLabel>
-              <Input type="number" step="1" min="1" {...form.register("perTransaction")} />
+              <Input type="number" step="1" min="1" {...form.register("perTransaction", { valueAsNumber: true })} />
               <FieldError errors={[form.formState.errors.perTransaction]} />
             </Field>
             <Field data-invalid={!!form.formState.errors.daily}>
               <FieldLabel>Daily Limit (₹)</FieldLabel>
-              <Input type="number" step="1" min="1" {...form.register("daily")} />
+              <Input type="number" step="1" min="1" {...form.register("daily", { valueAsNumber: true })} />
               <FieldError errors={[form.formState.errors.daily]} />
             </Field>
             <Field data-invalid={!!form.formState.errors.monthly}>
               <FieldLabel>Monthly Limit (₹)</FieldLabel>
-              <Input type="number" step="1" min="1" {...form.register("monthly")} />
+              <Input type="number" step="1" min="1" {...form.register("monthly", { valueAsNumber: true })} />
               <FieldError errors={[form.formState.errors.monthly]} />
             </Field>
             <DialogFooter className="pt-2">

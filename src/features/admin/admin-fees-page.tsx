@@ -31,10 +31,10 @@ interface FeeRule {
 
 const editSchema = z.object({
   feeType: z.enum(["FIXED", "PERCENTAGE"]),
-  fixedAmount: z.coerce.number().min(0),
-  percentage: z.coerce.number().min(0).max(100),
-  minFee: z.coerce.number().min(0),
-  maxFee: z.coerce.number().min(0),
+  fixedAmount: z.number().min(0),
+  percentage: z.number().min(0).max(100),
+  minFee: z.number().min(0),
+  maxFee: z.number().min(0),
   isEnabled: z.boolean(),
 })
 
@@ -198,22 +198,22 @@ export function AdminFeesPage() {
             <div className="grid grid-cols-2 gap-3">
               <Field>
                 <FieldLabel>Fixed Amount (₹)</FieldLabel>
-                <Input type="number" step="0.01" min="0" {...form.register("fixedAmount")} />
+                <Input type="number" step="0.01" min="0" {...form.register("fixedAmount", { valueAsNumber: true })} />
                 <FieldError errors={[form.formState.errors.fixedAmount]} />
               </Field>
               <Field>
                 <FieldLabel>Percentage (%)</FieldLabel>
-                <Input type="number" step="0.01" min="0" max="100" {...form.register("percentage")} />
+                <Input type="number" step="0.01" min="0" max="100" {...form.register("percentage", { valueAsNumber: true })} />
                 <FieldError errors={[form.formState.errors.percentage]} />
               </Field>
               <Field>
                 <FieldLabel>Min Fee (₹)</FieldLabel>
-                <Input type="number" step="0.01" min="0" {...form.register("minFee")} />
+                <Input type="number" step="0.01" min="0" {...form.register("minFee", { valueAsNumber: true })} />
                 <FieldError errors={[form.formState.errors.minFee]} />
               </Field>
               <Field>
                 <FieldLabel>Max Fee (₹)</FieldLabel>
-                <Input type="number" step="0.01" min="0" {...form.register("maxFee")} />
+                <Input type="number" step="0.01" min="0" {...form.register("maxFee", { valueAsNumber: true })} />
                 <FieldError errors={[form.formState.errors.maxFee]} />
               </Field>
             </div>
