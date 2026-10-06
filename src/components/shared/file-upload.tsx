@@ -2,7 +2,6 @@ import { useId, useRef, useState, useEffect, type DragEvent } from "react"
 import {
   CloudUpload,
   FileText,
-  ImageIcon,
   X,
   CheckCircle2,
   AlertCircle,
