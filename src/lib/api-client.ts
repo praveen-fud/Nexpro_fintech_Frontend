@@ -21,9 +21,17 @@ export class ApiError extends Error {
   }
 }
 
+// In local dev the Vite proxy forwards /api/* to the backend, so a relative
+// path works fine.  In production (Railway static site → separate backend
+// service) VITE_API_URL must be set to the backend's public URL so the
+// browser knows where to send requests.
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api/v1`
+  : "/api/v1"
+
 export const apiClient = axios.create({
-  baseURL: "/api/v1",
-  withCredentials: true,
+  baseURL: API_BASE,
+  withCredentials: true, // required for the httpOnly refresh-token cookie
   timeout: 15_000,
 })
 
@@ -40,7 +48,7 @@ let refreshPromise: Promise<string | null> | null = null
 async function refreshAccessToken(): Promise<string | null> {
   if (!refreshPromise) {
     refreshPromise = axios
-      .post<{ accessToken: string }>("/api/v1/auth/refresh", null, { withCredentials: true })
+      .post<{ accessToken: string }>(`${API_BASE}/auth/refresh`, null, { withCredentials: true })
       .then((res) => res.data.accessToken)
       .catch(() => null)
       .finally(() => {

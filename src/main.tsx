@@ -16,11 +16,8 @@ async function bootstrap() {
   const rootEl = document.getElementById("root")
   if (!rootEl) throw new Error("Root element not found")
 
-  // No backend deployed yet: intercept API calls with an in-memory mock
-  // "server" (src/lib/mock) so the full app is explorable on its own.
-  // Flip VITE_DEMO_MODE=false (and point VITE_API_URL at a real backend)
-  // to go live — no other code changes needed, every page already talks
-  // to apiClient the same way either way.
+  // Load the in-memory mock server only when demo mode is explicitly enabled
+  // (VITE_DEMO_MODE=true).  In production this block never runs.
   if (isDemoMode) {
     const { startMockServer } = await import("@/lib/mock")
     startMockServer()
@@ -38,7 +35,8 @@ async function bootstrap() {
             </TooltipProvider>
           </AuthProvider>
         </BrowserRouter>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* DevTools only in local development — never shipped to production */}
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </StrictMode>
   )

@@ -37,6 +37,7 @@ const KycQueuePage = lazy(() => import("@/features/operations/kyc-queue-page"))
 const KycDetailPage = lazy(() => import("@/features/operations/kyc-detail-page"))
 const OperationsPlaceholderPage = lazy(() => import("@/features/operations/operations-placeholder-page"))
 const AdminPlaceholderPage = lazy(() => import("@/features/admin/admin-placeholder-page"))
+const UserManagementPage = lazy(() => import("@/features/admin/user-management-page"))
 
 /** Every route gets the same subtle fade+rise entrance — one change, applied
  * consistently everywhere, rather than hand-animating each page. Pure CSS
@@ -169,11 +170,7 @@ export default function App() {
           />
           <Route
             path={routes.admin.operationsUsers}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Operations Team" description="Manage Operations users and assignments." />
-              </Page>
-            }
+            element={<Page><UserManagementPage /></Page>}
           />
           <Route
             path={routes.admin.funding}
