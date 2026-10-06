@@ -35,7 +35,15 @@ const FundingQueuePage = lazy(() => import("@/features/operations/funding-queue-
 const FundingDetailPage = lazy(() => import("@/features/operations/funding-detail-page"))
 const KycQueuePage = lazy(() => import("@/features/operations/kyc-queue-page"))
 const KycDetailPage = lazy(() => import("@/features/operations/kyc-detail-page"))
+const OperationsCustomersPage = lazy(() => import("@/features/operations/operations-customers-page"))
+const OperationsWalletsPage = lazy(() => import("@/features/operations/operations-wallets-page"))
+const OperationsTransactionsPage = lazy(() => import("@/features/operations/operations-transactions-page"))
 const OperationsPlaceholderPage = lazy(() => import("@/features/operations/operations-placeholder-page"))
+const AdminDashboardPage = lazy(() => import("@/features/admin/admin-dashboard-page"))
+const AdminCustomersPage = lazy(() => import("@/features/admin/admin-customers-page"))
+const AdminFeesPage = lazy(() => import("@/features/admin/admin-fees-page"))
+const AdminLimitsPage = lazy(() => import("@/features/admin/admin-limits-page"))
+const AdminAuditLogsPage = lazy(() => import("@/features/admin/admin-audit-logs-page"))
 const AdminPlaceholderPage = lazy(() => import("@/features/admin/admin-placeholder-page"))
 const UserManagementPage = lazy(() => import("@/features/admin/user-management-page"))
 
@@ -101,27 +109,15 @@ export default function App() {
           <Route path="/operations/kyc/:id" element={<Page><KycDetailPage /></Page>} />
           <Route
             path={routes.operations.customers}
-            element={
-              <Page>
-                <OperationsPlaceholderPage title="Customers" description="Search and manage customer profiles." />
-              </Page>
-            }
+            element={<Page><OperationsCustomersPage /></Page>}
           />
           <Route
             path={routes.operations.wallets}
-            element={
-              <Page>
-                <OperationsPlaceholderPage title="Wallets" description="View customer wallet balances and ledger activity." />
-              </Page>
-            }
+            element={<Page><OperationsWalletsPage /></Page>}
           />
           <Route
             path={routes.operations.transactions}
-            element={
-              <Page>
-                <OperationsPlaceholderPage title="Transactions" description="Search, filter, and export transaction records." />
-              </Page>
-            }
+            element={<Page><OperationsTransactionsPage /></Page>}
           />
           <Route
             path={routes.operations.reconciliation}
@@ -154,19 +150,11 @@ export default function App() {
         <Route element={<AdminLayout />}>
           <Route
             path={routes.admin.dashboard}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Dashboard" description="Platform-wide KPIs and system health." />
-              </Page>
-            }
+            element={<Page><AdminDashboardPage /></Page>}
           />
           <Route
             path={routes.admin.customers}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Customers" description="Manage all customer accounts." />
-              </Page>
-            }
+            element={<Page><AdminCustomersPage /></Page>}
           />
           <Route
             path={routes.admin.operationsUsers}
@@ -214,19 +202,11 @@ export default function App() {
           />
           <Route
             path={routes.admin.fees}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Fees" description="Configure fee rules per funding method." />
-              </Page>
-            }
+            element={<Page><AdminFeesPage /></Page>}
           />
           <Route
             path={routes.admin.limits}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Limits" description="Configure transaction, daily, and monthly limits." />
-              </Page>
-            }
+            element={<Page><AdminLimitsPage /></Page>}
           />
           <Route
             path={routes.admin.roles}
@@ -254,11 +234,7 @@ export default function App() {
           />
           <Route
             path={routes.admin.auditLogs}
-            element={
-              <Page>
-                <AdminPlaceholderPage title="Audit Logs" description="Every sensitive action, recorded." />
-              </Page>
-            }
+            element={<Page><AdminAuditLogsPage /></Page>}
           />
           <Route
             path={routes.admin.settings}
