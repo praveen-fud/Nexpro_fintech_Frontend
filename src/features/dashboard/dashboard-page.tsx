@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import { PlusCircle, Receipt, Grid2x2, User, ArrowRight, ArrowDownLeft, ArrowUpRight, Inbox, Clock, Sparkles } from "lucide-react"
+import { PlusCircle, Receipt, Grid2x2, User, ArrowRight, ArrowDownLeft, ArrowUpRight, Inbox, Clock, Sparkles, Lock } from "lucide-react"
 import { WalletCard } from "@/components/shared/wallet-card"
 import { TiltCard } from "@/components/shared/tilt-card"
 import { StatusBadge } from "@/components/shared/status-badge"
@@ -121,12 +121,25 @@ export function DashboardPage() {
             </TiltCard>
           )}
           <div className="mt-4 flex flex-wrap gap-3">
-            <Button size="lg" asChild>
-              <Link to={addMoneyTo}>
-                <PlusCircle className="size-4" />
+            {isKycApproved ? (
+              <Button size="lg" asChild>
+                <Link to={routes.app.addMoney}>
+                  <PlusCircle className="size-4" />
+                  Add Money
+                </Link>
+              </Button>
+            ) : (
+              <Link
+                to={routes.app.kycStatus}
+                className="inline-flex items-center gap-2 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/50 px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                <Lock className="size-4" />
                 Add Money
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                  KYC Required
+                </span>
               </Link>
-            </Button>
+            )}
             <Button size="lg" variant="outline" asChild>
               <Link to={routes.app.wallet}>View Wallet</Link>
             </Button>
@@ -162,23 +175,36 @@ export function DashboardPage() {
       <StaggerItem className="mt-8">
         <p className="mb-3 text-sm font-semibold text-foreground">Quick Actions</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {quickActions.map((action) => (
-            <Link
-              key={action.label}
-              to={action.to}
-              className="group flex flex-col items-center gap-2.5 rounded-xl border border-border bg-card p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
-            >
-              <span
+          {quickActions.map((action) => {
+            const isLocked = !isKycApproved && action.label === "Add Money"
+            return (
+              <Link
+                key={action.label}
+                to={action.to}
                 className={cn(
-                  "flex size-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
-                  action.tone
+                  "group relative flex flex-col items-center gap-2.5 rounded-xl border bg-card p-4 text-center shadow-sm transition-all duration-300",
+                  isLocked
+                    ? "border-dashed border-muted-foreground/30 opacity-70 hover:border-amber-400/50 hover:opacity-100"
+                    : "border-border hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
                 )}
               >
-                <action.icon className="size-5" aria-hidden="true" />
-              </span>
-              <span className="text-xs font-medium text-foreground">{action.label}</span>
-            </Link>
-          ))}
+                {isLocked && (
+                  <span className="absolute right-2 top-2 flex size-4 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
+                    <Lock className="size-2.5 text-amber-600 dark:text-amber-400" />
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "flex size-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
+                    isLocked ? "bg-muted text-muted-foreground" : action.tone
+                  )}
+                >
+                  <action.icon className="size-5" aria-hidden="true" />
+                </span>
+                <span className="text-xs font-medium text-foreground">{action.label}</span>
+              </Link>
+            )
+          })}
         </div>
       </StaggerItem>
 

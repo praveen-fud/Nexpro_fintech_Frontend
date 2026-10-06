@@ -3,7 +3,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useNavigate } from "react-router-dom"
-import { AlertTriangle, ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react"
+import { AlertTriangle, ArrowLeft, ArrowRight, Loader2, ShieldCheck, Lock, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
@@ -161,7 +161,7 @@ export function KycPage() {
       <Stepper steps={steps} currentIndex={stepIndex} className="mb-8" />
 
       {stepIndex === 0 && (
-        <FieldGroup>
+        <div className="space-y-5">
           {needsFix && (
             <Alert variant="destructive">
               <AlertTriangle />
@@ -173,28 +173,96 @@ export function KycPage() {
               </AlertDescription>
             </Alert>
           )}
-          <FileUpload
-            label="Government ID Proof"
-            description="Aadhaar, Passport, or Voter ID"
-            value={documents.idProof}
-            onChange={(f) => setDocuments((d) => ({ ...d, idProof: f }))}
-          />
-          <FileUpload
-            label="Address Proof"
-            description="Utility bill or bank statement, not older than 3 months"
-            value={documents.addressProof}
-            onChange={(f) => setDocuments((d) => ({ ...d, addressProof: f }))}
-          />
-          <FileUpload
-            label="PAN Card"
-            description="Required for financial verification"
-            value={documents.panCard}
-            onChange={(f) => setDocuments((d) => ({ ...d, panCard: f }))}
-          />
-          <FieldDescription>
-            Documents are simulated uploads in this environment and are not verified by a third party.
-          </FieldDescription>
-        </FieldGroup>
+
+          {/* Progress header */}
+          <div className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                <Lock className="size-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Identity Documents</p>
+                <p className="text-xs text-muted-foreground">All 3 documents are required</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {(["idProof", "addressProof", "panCard"] as const).map((key) => (
+                <div
+                  key={key}
+                  className={
+                    documents[key]
+                      ? "flex size-6 items-center justify-center rounded-full bg-emerald-500"
+                      : "size-6 rounded-full border-2 border-dashed border-muted-foreground/30"
+                  }
+                >
+                  {documents[key] && <CheckCircle2 className="size-4 text-white" />}
+                </div>
+              ))}
+              <span className="ml-1 text-xs font-semibold text-muted-foreground">
+                {[documents.idProof, documents.addressProof, documents.panCard].filter(Boolean).length}/3
+              </span>
+            </div>
+          </div>
+
+          {/* Document cards */}
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+              <div className="border-b border-border/60 bg-muted/30 px-4 py-2.5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Document 1 of 3
+                </p>
+              </div>
+              <div className="p-4">
+                <FileUpload
+                  label="Government ID Proof"
+                  description="Aadhaar · Passport · Voter ID"
+                  value={documents.idProof}
+                  onChange={(f) => setDocuments((d) => ({ ...d, idProof: f }))}
+                />
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+              <div className="border-b border-border/60 bg-muted/30 px-4 py-2.5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Document 2 of 3
+                </p>
+              </div>
+              <div className="p-4">
+                <FileUpload
+                  label="Address Proof"
+                  description="Utility bill or bank statement · not older than 3 months"
+                  value={documents.addressProof}
+                  onChange={(f) => setDocuments((d) => ({ ...d, addressProof: f }))}
+                />
+              </div>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+              <div className="border-b border-border/60 bg-muted/30 px-4 py-2.5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Document 3 of 3
+                </p>
+              </div>
+              <div className="p-4">
+                <FileUpload
+                  label="PAN Card"
+                  description="Required for financial verification"
+                  value={documents.panCard}
+                  onChange={(f) => setDocuments((d) => ({ ...d, panCard: f }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Security note */}
+          <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+            <Lock className="mt-0.5 size-3.5 shrink-0 text-muted-foreground/60" />
+            <span>
+              Your documents are encrypted and handled securely. They are reviewed only by authorised Nexpro staff.
+            </span>
+          </div>
+        </div>
       )}
 
       {stepIndex === 1 && (

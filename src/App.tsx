@@ -82,20 +82,22 @@ export default function App() {
             <Route path={routes.app.addMoneyCreditCard} element={<Page><CreditCardFundingPage /></Page>} />
             <Route path={routes.app.addMoneyUpi} element={<Page><UpiFundingPage /></Page>} />
             <Route path={routes.app.addMoneyBankTransfer} element={<Page><BankTransferFundingPage /></Page>} />
+            <Route path="/app/funding-requests/:id" element={<Page><FundingRequestDetailPage /></Page>} />
+            <Route path="/app/funding-requests/:id/success" element={<Page><FundingSuccessPage /></Page>} />
+            <Route path="/app/transactions/:id" element={<Page><TransactionDetailPage /></Page>} />
           </Route>
-
-          <Route path="/app/funding-requests/:id" element={<Page><FundingRequestDetailPage /></Page>} />
-          <Route path="/app/funding-requests/:id/success" element={<Page><FundingSuccessPage /></Page>} />
-          <Route path="/app/transactions/:id" element={<Page><TransactionDetailPage /></Page>} />
 
           <Route element={<AppLayout />}>
             <Route path={routes.app.dashboard} element={<Page><DashboardPage /></Page>} />
             <Route path={routes.app.kycStatus} element={<Page><KycStatusPage /></Page>} />
-            <Route path={routes.app.wallet} element={<Page><WalletPage /></Page>} />
-            <Route path={routes.app.transactions} element={<Page><TransactionsPage /></Page>} />
-            <Route path={routes.app.services} element={<Page><ServicesPage /></Page>} />
             <Route path={routes.app.profile} element={<Page><ProfilePage /></Page>} />
             <Route path={routes.app.support} element={<Page><SupportPage /></Page>} />
+
+            <Route element={<RequireApprovedKyc />}>
+              <Route path={routes.app.wallet} element={<Page><WalletPage /></Page>} />
+              <Route path={routes.app.transactions} element={<Page><TransactionsPage /></Page>} />
+              <Route path={routes.app.services} element={<Page><ServicesPage /></Page>} />
+            </Route>
           </Route>
         </Route>
       </Route>

@@ -1,6 +1,7 @@
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import { PlusCircle, Receipt, Inbox, Wallet as WalletIcon, Clock, Activity } from "lucide-react"
+import { PlusCircle, Receipt, Inbox, Wallet as WalletIcon, Clock, Activity, Eye, EyeOff, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageHeader } from "@/components/shared/page-header"
@@ -12,9 +13,28 @@ import { apiClient } from "@/lib/api-client"
 import { formatCurrency, formatDateTime } from "@/lib/format"
 import { routes } from "@/lib/routes"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/features/auth/auth-context"
 import type { Wallet, WalletLedgerEntry } from "@/types/domain"
 
+const PREF_KEY = "nexpro_balance_hidden"
+function readPref(): boolean {
+  try { return localStorage.getItem(PREF_KEY) !== "false" } catch { return true }
+}
+function writePref(h: boolean) {
+  try { localStorage.setItem(PREF_KEY, String(h)) } catch {}
+}
+
 export function WalletPage() {
+  const { user } = useAuth()
+  const isKycApproved = user?.kycStatus === "APPROVED"
+  const [hidden, setHidden] = useState<boolean>(readPref)
+
+  const toggle = () => {
+    const next = !hidden
+    setHidden(next)
+    writePref(next)
+  }
+
   const walletQuery = useQuery({
     queryKey: ["wallet", "me"],
     queryFn: async () => (await apiClient.get<Wallet>("/wallet/me")).data,
@@ -32,12 +52,32 @@ export function WalletPage() {
           title="Wallet"
           description="Your available balance, pending funding, and ledger activity."
           actions={
-            <Button asChild>
-              <Link to={routes.app.addMoney}>
-                <PlusCircle className="size-4" />
-                Add Money
-              </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label={hidden ? "Show balances" : "Hide balances"}
+                className="flex size-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                {hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+              </button>
+              {isKycApproved ? (
+                <Button asChild>
+                  <Link to={routes.app.addMoney}>
+                    <PlusCircle className="size-4" />
+                    Add Money
+                  </Link>
+                </Button>
+              ) : (
+                <Link
+                  to={routes.app.kycStatus}
+                  className="inline-flex items-center gap-2 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/50 px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-amber-400/50 hover:text-amber-600"
+                >
+                  <Lock className="size-4" />
+                  Add Money
+                </Link>
+              )}
+            </div>
           }
         />
       </StaggerItem>
@@ -53,7 +93,15 @@ export function WalletPage() {
                 <WalletIcon className="size-4" />
               </span>
             </div>
-            <p className="font-tabular mt-2 text-2xl font-semibold text-foreground">
+            <p
+              className="font-tabular mt-2 text-2xl font-semibold text-foreground"
+              style={{
+                filter: hidden ? "blur(8px)" : "blur(0px)",
+                opacity: hidden ? 0.55 : 1,
+                transition: "filter 350ms cubic-bezier(0.4,0,0.2,1), opacity 350ms ease",
+                userSelect: hidden ? "none" : "auto",
+              }}
+            >
               {formatCurrency(walletQuery.data.availableBalance)}
             </p>
           </div>
@@ -64,7 +112,15 @@ export function WalletPage() {
                 <Clock className="size-4" />
               </span>
             </div>
-            <p className="font-tabular mt-2 text-2xl font-semibold text-warning">
+            <p
+              className="font-tabular mt-2 text-2xl font-semibold text-warning"
+              style={{
+                filter: hidden ? "blur(8px)" : "blur(0px)",
+                opacity: hidden ? 0.55 : 1,
+                transition: "filter 350ms cubic-bezier(0.4,0,0.2,1), opacity 350ms ease",
+                userSelect: hidden ? "none" : "auto",
+              }}
+            >
               {formatCurrency(walletQuery.data.pendingBalance)}
             </p>
           </div>
@@ -75,7 +131,15 @@ export function WalletPage() {
                 <Activity className="size-4" />
               </span>
             </div>
-            <p className="font-tabular mt-2 text-2xl font-semibold text-foreground">
+            <p
+              className="font-tabular mt-2 text-2xl font-semibold text-foreground"
+              style={{
+                filter: hidden ? "blur(8px)" : "blur(0px)",
+                opacity: hidden ? 0.55 : 1,
+                transition: "filter 350ms cubic-bezier(0.4,0,0.2,1), opacity 350ms ease",
+                userSelect: hidden ? "none" : "auto",
+              }}
+            >
               {formatCurrency(walletQuery.data.availableBalance + walletQuery.data.pendingBalance)}
             </p>
           </div>
