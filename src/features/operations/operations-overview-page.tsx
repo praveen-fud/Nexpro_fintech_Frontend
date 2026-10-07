@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header"
 import { Stagger, StaggerItem } from "@/components/shared/motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { PendingRequestsCard } from "@/features/operations/pending-requests-card"
 import { apiClient } from "@/lib/api-client"
 import { formatCurrency } from "@/lib/format"
 
@@ -92,6 +93,10 @@ export function OperationsOverviewPage() {
             <KpiCard label="Total Funding Volume" value={formatCurrency(data.totalFundingVolume)} icon={Wallet} tone="primary" />
             <KpiCard label="KYC Pending" value={String(data.kycPending)} icon={ShieldAlert} tone="info" />
             <KpiCard label="Exceptions" value={String(data.exceptions)} icon={AlertTriangle} tone="error" />
+          </StaggerItem>
+
+          <StaggerItem className="mt-6">
+            <PendingRequestsCard base="/operations" />
           </StaggerItem>
 
           <StaggerItem className="mt-6 grid gap-4 lg:grid-cols-3">

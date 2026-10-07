@@ -16,8 +16,19 @@ export interface FundingQuote {
 export function useFundingQuote(amount: number, method: FundingMethod) {
   return useQuery({
     queryKey: ["funding", "quote", amount, method],
-    queryFn: async () =>
-      (await apiClient.get<FundingQuote>("/funding-requests/quote", { params: { amount, method } })).data,
+    queryFn: async () => {
+      // The API serialises Decimals as strings; normalise once here so every
+      // consumer gets real numbers (otherwise `amount + fee` concatenates).
+      const raw = (await apiClient.get<Record<keyof FundingQuote, string | number>>("/funding-requests/quote", {
+        params: { amount, method },
+      })).data
+      return {
+        requestedAmount: Number(raw.requestedAmount),
+        fee: Number(raw.fee),
+        walletCredit: Number(raw.walletCredit),
+        totalPayment: Number(raw.totalPayment),
+      } satisfies FundingQuote
+    },
     enabled: amount > 0,
   })
 }

@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { apiClient } from "@/lib/api-client"
 import { formatDateTime } from "@/lib/format"
-import { routes } from "@/lib/routes"
+import { usePortal } from "@/lib/portal"
 import type { KycStatus } from "@/types/domain"
 
 type FilterKey = "ALL" | KycStatus
@@ -38,6 +38,7 @@ const filters: { key: FilterKey; label: string }[] = [
 ]
 
 export function KycQueuePage() {
+  const portal = usePortal()
   const [filter, setFilter] = useState<FilterKey>("ALL")
   const [search, setSearch] = useState("")
 
@@ -118,7 +119,7 @@ export function KycQueuePage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
-                      to={routes.operations.kycDetail(profile.id)}
+                      to={portal.kycDetail(profile.id)}
                       className="inline-flex items-center gap-1 font-medium text-primary transition-all group-hover:gap-1.5 hover:underline"
                     >
                       Review

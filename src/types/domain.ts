@@ -83,6 +83,8 @@ export interface FundingRequest {
   status: FundingStatus
   paymentStatus: PaymentStatus
   reference: string
+  utr?: string | null
+  hasProof?: boolean
   assignedTo?: string | null
   createdAt: string
   updatedAt: string
@@ -134,6 +136,7 @@ export interface KycProfile {
   bankAccount?: {
     accountHolderName: string
     accountNumberMasked: string
+    bankName?: string
     ifsc: string
   }
   reviewNotes?: string

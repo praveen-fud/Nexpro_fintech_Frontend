@@ -13,7 +13,7 @@ import { PasswordInput } from "@/components/shared/password-input"
 import { AuthLayout, FormItem, FormStagger } from "@/layouts/auth-layout"
 import { useAuth } from "@/features/auth/auth-context"
 import { ApiError } from "@/lib/api-client"
-import { routes } from "@/lib/routes"
+import { homeForRole, pathAllowedForRole, routes } from "@/lib/routes"
 
 const loginSchema = z.object({
   identifier: z.string().min(3, "Enter your email or mobile number"),
@@ -38,16 +38,10 @@ export function LoginPage() {
     setSubmitting(true)
     try {
       const user = await login(values)
-      const redirectTo = (location.state as { from?: Location })?.from?.pathname
-      if (redirectTo) {
-        navigate(redirectTo, { replace: true })
-      } else if (user.role === "SUPER_ADMIN") {
-        navigate(routes.admin.root, { replace: true })
-      } else if (user.role === "OPERATIONS") {
-        navigate(routes.operations.root, { replace: true })
-      } else {
-        navigate(routes.app.root, { replace: true })
-      }
+      // Only honour the pre-logout page if this role may open it; otherwise a
+      // different account signing in lands on the wrong area and gets bounced.
+      const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname
+      navigate(from && pathAllowedForRole(from, user.role) ? from : homeForRole(user.role), { replace: true })
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Could not sign in. Please try again.")
     } finally {

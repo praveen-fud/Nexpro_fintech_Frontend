@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Users, Wallet, TrendingUp, Clock, ShieldCheck, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PendingRequestsCard } from "@/features/operations/pending-requests-card"
 import { apiClient } from "@/lib/api-client"
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -89,6 +90,8 @@ export function AdminDashboardPage() {
           Platform-wide KPIs and system health at a glance.
         </p>
       </div>
+
+      <PendingRequestsCard base="/admin" />
 
       {/* KPI Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

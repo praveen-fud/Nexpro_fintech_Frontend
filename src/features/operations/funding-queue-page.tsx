@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { apiClient } from "@/lib/api-client"
 import { formatCurrency, formatDateTime } from "@/lib/format"
-import { routes } from "@/lib/routes"
+import { usePortal } from "@/lib/portal"
 import type { FundingRequest, FundingStatus } from "@/types/domain"
 
 type FilterKey = "ALL" | FundingStatus
@@ -33,6 +33,7 @@ const METHOD_LABEL: Record<FundingRequest["method"], string> = {
 }
 
 export function FundingQueuePage() {
+  const portal = usePortal()
   const [filter, setFilter] = useState<FilterKey>("ALL")
   const [search, setSearch] = useState("")
 
@@ -117,7 +118,7 @@ export function FundingQueuePage() {
                   <td className="px-4 py-3 text-muted-foreground">{request.assignedTo ?? "Unassigned"}</td>
                   <td className="px-4 py-3 text-right">
                     <Link
-                      to={routes.operations.fundingDetail(request.id)}
+                      to={portal.fundingDetail(request.id)}
                       className="inline-flex items-center gap-1 font-medium text-primary transition-all group-hover:gap-1.5 hover:underline"
                     >
                       Review

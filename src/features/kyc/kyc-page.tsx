@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useNavigate } from "react-router-dom"
@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { FlowLayout } from "@/layouts/flow-layout"
 import { Stepper, type StepperStep } from "@/components/shared/stepper"
+import { BankSelect } from "@/components/shared/bank-select"
 import { FileUpload } from "@/components/shared/file-upload"
 import { apiClient, ApiError } from "@/lib/api-client"
 import { routes } from "@/lib/routes"
@@ -45,6 +46,7 @@ const bankSchema = z
     accountHolderName: z.string().min(2, "Enter the account holder name"),
     accountNumber: z.string().regex(/^\d{9,18}$/, "Enter a valid account number"),
     confirmAccountNumber: z.string(),
+    bankName: z.string().min(2, "Select your bank"),
     ifsc: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter a valid IFSC code"),
   })
   .refine((d) => d.accountNumber === d.confirmAccountNumber, {
@@ -80,7 +82,7 @@ export function KycPage() {
 
   const bankForm = useForm<BankForm>({
     resolver: zodResolver(bankSchema),
-    defaultValues: { accountHolderName: "", accountNumber: "", confirmAccountNumber: "", ifsc: "" },
+    defaultValues: { accountHolderName: "", accountNumber: "", confirmAccountNumber: "", bankName: "", ifsc: "" },
   })
 
   const selectedState = useWatch({ control: personalForm.control, name: "state" })
@@ -99,6 +101,7 @@ export function KycPage() {
         accountHolderName: existingProfile.bankAccount.accountHolderName,
         accountNumber: "",
         confirmAccountNumber: "",
+        bankName: existingProfile.bankAccount.bankName ?? "",
         ifsc: existingProfile.bankAccount.ifsc,
       })
     }
@@ -326,6 +329,24 @@ export function KycPage() {
               <FieldError errors={[bankForm.formState.errors.accountHolderName]} />
             </Field>
 
+            <Field data-invalid={!!bankForm.formState.errors.bankName}>
+              <FieldLabel htmlFor="bankName">Bank Name</FieldLabel>
+              <Controller
+                control={bankForm.control}
+                name="bankName"
+                render={({ field }) => (
+                  <BankSelect
+                    id="bankName"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={!!bankForm.formState.errors.bankName}
+                  />
+                )}
+              />
+              <FieldError errors={[bankForm.formState.errors.bankName]} />
+            </Field>
+
             <Field data-invalid={!!bankForm.formState.errors.accountNumber}>
               <FieldLabel htmlFor="accountNumber">Account Number</FieldLabel>
               <Input id="accountNumber" inputMode="numeric" {...bankForm.register("accountNumber")} />
@@ -374,6 +395,10 @@ export function KycPage() {
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Account Holder</dt>
                 <dd className="text-foreground">{bankForm.getValues("accountHolderName")}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Bank</dt>
+                <dd className="text-foreground">{bankForm.getValues("bankName")}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">IFSC</dt>

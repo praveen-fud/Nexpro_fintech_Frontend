@@ -483,6 +483,7 @@ export function submitKyc(
     bankAccount: {
       accountHolderName: bankAccount.accountHolderName ?? "",
       accountNumberMasked: bankAccount.accountNumber ? `XXXXXXXX${bankAccount.accountNumber.slice(-4)}` : "",
+      bankName: bankAccount.bankName ?? "",
       ifsc: bankAccount.ifsc ?? "",
     },
   }

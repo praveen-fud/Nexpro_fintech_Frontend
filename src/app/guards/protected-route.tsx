@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useAuth } from "@/features/auth/auth-context"
-import { routes } from "@/lib/routes"
+import { homeForRole, routes } from "@/lib/routes"
 import type { Role } from "@/types/domain"
 import { FullScreenLoader } from "@/components/shared/full-screen-loader"
 
@@ -22,7 +22,7 @@ export function ProtectedRoute({ allowedRoles }: { allowedRoles?: Role[] }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={routes.home} replace />
+    return <Navigate to={homeForRole(user.role)} replace />
   }
 
   return <Outlet />

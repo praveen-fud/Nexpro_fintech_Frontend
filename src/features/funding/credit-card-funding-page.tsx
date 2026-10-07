@@ -1,63 +1,112 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query"
-import { ArrowRight, Loader2, ShieldCheck } from "lucide-react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { ArrowRight, Loader2, Lock, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
 import { FlowLayout } from "@/layouts/flow-layout"
 import { Stepper, type StepperStep } from "@/components/shared/stepper"
 import { CurrencyInput } from "@/components/shared/currency-input"
 import { FundingSummary } from "@/components/shared/funding-summary"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field"
+import { useAuth } from "@/features/auth/auth-context"
 import { useFundingQuote } from "@/features/funding/use-funding-quote"
 import { apiClient, ApiError } from "@/lib/api-client"
-import { formatCurrency, maskCardNumber } from "@/lib/format"
+import { loadRazorpayCheckout } from "@/lib/razorpay"
+import { formatCurrency } from "@/lib/format"
 import { routes } from "@/lib/routes"
 import type { FundingRequest } from "@/types/domain"
 
 const steps: StepperStep[] = [
   { key: "amount", label: "Enter Amount" },
-  { key: "payment", label: "Payment Details" },
   { key: "review", label: "Review" },
+  { key: "pay", label: "Secure Payment" },
 ]
+
+interface CardOrder {
+  orderId: string
+  keyId: string
+  amountPaise: number
+  currency: string
+}
 
 export function CreditCardFundingPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
   const [stepIndex, setStepIndex] = useState(0)
   const [amount, setAmount] = useState("")
-  const [cardHolderName, setCardHolderName] = useState("")
-  const [last4, setLast4] = useState("")
-  const [expiry, setExpiry] = useState("")
+  const [paying, setPaying] = useState(false)
 
   const amountNumber = Number(amount) || 0
   const quote = useFundingQuote(amountNumber, "CREDIT_CARD")
 
-  const createRequest = useMutation({
-    mutationFn: async () =>
-      (
-        await apiClient.post<FundingRequest>("/funding-requests", {
-          method: "CREDIT_CARD",
-          amount: amountNumber,
-          paymentDetails: { cardHolderName, maskedCard: maskCardNumber(last4), expiry },
-        })
-      ).data,
+  const configQuery = useQuery({
+    queryKey: ["funding", "card-config"],
+    queryFn: async () => (await apiClient.get<{ enabled: boolean }>("/funding-requests/card/config")).data,
+  })
+  const cardsAvailable = configQuery.data?.enabled ?? false
+
+  const verify = useMutation({
+    mutationFn: async (payload: { orderId: string; paymentId: string; signature: string }) =>
+      (await apiClient.post<FundingRequest>("/funding-requests/card/verify", payload)).data,
     onSuccess: (request) => {
+      void queryClient.invalidateQueries({ queryKey: ["wallet"] })
       navigate(routes.app.fundingRequest(request.id))
     },
     onError: (err) => {
-      toast.error(err instanceof ApiError ? err.message : "Could not create funding request. Please try again.")
+      setPaying(false)
+      toast.error(err instanceof ApiError ? err.message : "We could not confirm your payment. Contact support if you were charged.")
     },
   })
 
-  const goBack = () => {
-    if (stepIndex === 0) navigate(routes.app.addMoney)
-    else setStepIndex((i) => i - 1)
+  // Card details are typed into Razorpay's hosted checkout — never into our page,
+  // never sent to our server.
+  const startPayment = async () => {
+    setPaying(true)
+    try {
+      const order = (await apiClient.post<CardOrder>("/funding-requests/card/order", { amount: amountNumber })).data
+      const Razorpay = await loadRazorpayCheckout()
+      const checkout = new Razorpay({
+        key: order.keyId,
+        order_id: order.orderId,
+        amount: order.amountPaise,
+        currency: order.currency,
+        name: "Nexpro Fintech",
+        description: "Wallet top-up",
+        prefill: { name: user?.fullName, email: user?.email, contact: user?.mobileNumber },
+        theme: { color: "#4f46e5" },
+        handler: (res) =>
+          verify.mutate({
+            orderId: res.razorpay_order_id,
+            paymentId: res.razorpay_payment_id,
+            signature: res.razorpay_signature,
+          }),
+        modal: { ondismiss: () => setPaying(false), confirm_close: true },
+      })
+      checkout.on("payment.failed", () => {
+        setPaying(false)
+        toast.error("Payment failed. You have not been charged — please try again or use another card.")
+      })
+      checkout.open()
+    } catch (err) {
+      setPaying(false)
+      toast.error(err instanceof ApiError ? err.message : "Could not start the payment. Please try again.")
+    }
   }
 
+  const goBack = () => (stepIndex === 0 ? navigate(routes.app.addMoney) : setStepIndex((i) => i - 1))
+  const total = quote.data?.totalPayment ?? amountNumber
+
   return (
-    <FlowLayout title="Add Money via Credit Card" onBack={goBack}>
-      <Stepper steps={steps} currentIndex={stepIndex} className="mb-8" />
+    <FlowLayout title="Add Money via Card" closeTo={routes.app.addMoney} onBack={paying ? undefined : goBack}>
+      <Stepper steps={steps} currentIndex={Math.min(stepIndex, 2)} className="mb-8" />
+
+      {configQuery.isSuccess && !cardsAvailable && (
+        <div className="mb-6 rounded-md border border-warning/30 bg-warning-surface p-3 text-sm text-warning">
+          Card payments are not available right now. Please use UPI or bank transfer.
+        </div>
+      )}
 
       {stepIndex === 0 && (
         <div>
@@ -69,7 +118,7 @@ export function CreditCardFundingPage() {
           <Button
             className="mt-6 w-full"
             size="lg"
-            disabled={amountNumber < 500}
+            disabled={amountNumber < 500 || !cardsAvailable}
             onClick={() => setStepIndex(1)}
           >
             Continue
@@ -78,78 +127,25 @@ export function CreditCardFundingPage() {
         </div>
       )}
 
-      {stepIndex === 1 && (
+      {stepIndex >= 1 && (
         <div className="space-y-5">
-          <div className="rounded-md border border-info/30 bg-info-surface p-3 text-xs text-info">
-            This is a simulated payment form. Nexpro never collects or stores your full card number or CVV —
-            in production, card details are captured by a PCI-compliant hosted field.
-          </div>
-          <Field>
-            <FieldLabel htmlFor="cardHolderName">Cardholder Name</FieldLabel>
-            <Input id="cardHolderName" value={cardHolderName} onChange={(e) => setCardHolderName(e.target.value)} />
-          </Field>
-          <div className="grid grid-cols-2 gap-4">
-            <Field>
-              <FieldLabel htmlFor="last4">Last 4 Digits</FieldLabel>
-              <Input
-                id="last4"
-                inputMode="numeric"
-                maxLength={4}
-                value={last4}
-                onChange={(e) => setLast4(e.target.value.replace(/\D/g, ""))}
-                placeholder="4821"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="expiry">Expiry (MM/YY)</FieldLabel>
-              <Input
-                id="expiry"
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                placeholder="08/29"
-                maxLength={5}
-              />
-            </Field>
-          </div>
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={!cardHolderName || last4.length !== 4 || !expiry}
-            onClick={() => setStepIndex(2)}
-          >
-            Continue
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
-      )}
+          <FundingSummary
+            requestedAmount={quote.data?.requestedAmount ?? amountNumber}
+            fee={quote.data?.fee ?? 0}
+            walletCredit={quote.data?.walletCredit ?? amountNumber}
+          />
 
-      {stepIndex === 2 && (
-        <div className="space-y-5">
-          <div className="rounded-md border border-border bg-muted/40 p-4">
-            <p className="text-xs text-muted-foreground">Card</p>
-            <p className="font-tabular mt-1 text-sm font-medium text-foreground">
-              {maskCardNumber(last4)} · {cardHolderName}
+          <div className="flex items-start gap-3 rounded-md border border-border bg-muted/40 p-4 text-xs text-muted-foreground">
+            <Lock className="mt-0.5 size-4 shrink-0 text-success" />
+            <p>
+              You&apos;ll enter your card details in Razorpay&apos;s secure window. Nexpro never sees or stores your
+              card number, expiry or CVV. Your wallet is credited immediately after the payment succeeds.
             </p>
           </div>
 
-          {quote.data ? (
-            <FundingSummary
-              requestedAmount={quote.data.requestedAmount}
-              fee={quote.data.fee}
-              walletCredit={quote.data.walletCredit}
-            />
-          ) : (
-            <FundingSummary requestedAmount={amountNumber} fee={0} walletCredit={amountNumber} />
-          )}
-
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={createRequest.isPending}
-            onClick={() => createRequest.mutate()}
-          >
-            {createRequest.isPending ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
-            Confirm &amp; Pay {quote.data ? formatCurrency(quote.data.totalPayment) : formatCurrency(amountNumber)}
+          <Button className="w-full" size="lg" disabled={paying || !quote.data} onClick={startPayment}>
+            {paying ? <Loader2 className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+            Pay {formatCurrency(total)} securely
           </Button>
         </div>
       )}

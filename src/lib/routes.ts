@@ -2,6 +2,7 @@ export const routes = {
   home: "/",
   signUp: "/sign-up",
   login: "/login",
+  payLink: (token: string) => `/pay/${token}`,
 
   app: {
     root: "/app",
@@ -18,6 +19,7 @@ export const routes = {
     transactions: "/app/transactions",
     transaction: (id: string) => `/app/transactions/${id}`,
     services: "/app/services",
+    cardToBank: "/app/services/card-to-bank",
     profile: "/app/profile",
     support: "/app/support",
   },
@@ -25,6 +27,7 @@ export const routes = {
   operations: {
     root: "/operations",
     overview: "/operations",
+    requests: "/operations/requests",
     fundingQueue: "/operations/funding",
     fundingDetail: (id: string) => `/operations/funding/${id}`,
     kycQueue: "/operations/kyc",
@@ -40,6 +43,7 @@ export const routes = {
   admin: {
     root: "/admin",
     dashboard: "/admin",
+    requests: "/admin/requests",
     customers: "/admin/customers",
     operationsUsers: "/admin/operations",
     funding: "/admin/funding",
@@ -56,3 +60,18 @@ export const routes = {
     settings: "/admin/settings",
   },
 } as const
+
+export type RouteRole = "CUSTOMER" | "OPERATIONS" | "SUPER_ADMIN"
+
+/** Landing area for each role after sign-in. */
+export function homeForRole(role: RouteRole): string {
+  if (role === "SUPER_ADMIN") return routes.admin.root
+  if (role === "OPERATIONS") return routes.operations.root
+  return routes.app.root
+}
+
+/** True when `path` sits inside the area that `role` is allowed to use. */
+export function pathAllowedForRole(path: string, role: RouteRole): boolean {
+  const root = homeForRole(role)
+  return path === root || path.startsWith(`${root}/`)
+}

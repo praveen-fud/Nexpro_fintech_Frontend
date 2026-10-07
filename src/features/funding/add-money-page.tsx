@@ -8,21 +8,21 @@ const methods = [
   {
     key: "credit-card",
     title: "Credit Card",
-    description: "Fund your wallet using a supported card.",
+    description: "Pay by card in a secure window — credited instantly.",
     icon: CreditCard,
     to: routes.app.addMoneyCreditCard,
   },
   {
     key: "upi",
     title: "UPI",
-    description: "Complete payment securely through UPI.",
+    description: "Scan the QR or use our UPI ID, then submit the UTR and screenshot.",
     icon: Smartphone,
     to: routes.app.addMoneyUpi,
   },
   {
     key: "bank-transfer",
     title: "Bank Transfer",
-    description: "Transfer funds from your bank account.",
+    description: "Send via NEFT, IMPS or RTGS, then submit the UTR.",
     icon: Landmark,
     to: routes.app.addMoneyBankTransfer,
   },
@@ -61,8 +61,8 @@ export function AddMoneyPage() {
         </div>
         <StaggerItem>
           <p className="mt-6 text-xs text-muted-foreground">
-            Funding requests are reviewed by Operations before your wallet is credited. We do not claim instant
-            settlement for any method.
+            Card payments are credited as soon as the payment is confirmed. UPI and bank transfers are credited after
+            our team verifies your payment details.
           </p>
         </StaggerItem>
       </Stagger>

@@ -12,6 +12,7 @@ import {
   X,
   XCircle,
 } from "lucide-react"
+import { ProofViewer } from "@/components/shared/proof-viewer"
 import { PageHeader } from "@/components/shared/page-header"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { FundingSummary } from "@/components/shared/funding-summary"
@@ -71,6 +72,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
 export function FundingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
+  const [proofOpen, setProofOpen] = useState(false)
   const [approveOpen, setApproveOpen] = useState(false)
   const [rejectOpen, setRejectOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
@@ -198,6 +200,22 @@ export function FundingDetailPage() {
                 <dt className="text-muted-foreground">Reference</dt>
                 <dd className="font-tabular font-medium text-foreground">{request.reference}</dd>
               </div>
+              {request.utr && (
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">UTR</dt>
+                  <dd className="font-tabular break-all font-medium text-foreground">{request.utr}</dd>
+                </div>
+              )}
+              {request.hasProof && (
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Payment proof</dt>
+                  <dd>
+                    <Button variant="outline" size="sm" onClick={() => setProofOpen(true)}>
+                      View proof
+                    </Button>
+                  </dd>
+                </div>
+              )}
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Payment Status</dt>
                 <dd className="font-medium text-foreground">{request.paymentStatus.replace(/_/g, " ")}</dd>
@@ -240,6 +258,12 @@ export function FundingDetailPage() {
           </Button>
         </div>
       )}
+
+      <ProofViewer
+        open={proofOpen}
+        onClose={() => setProofOpen(false)}
+        path={`/operations/funding-requests/${id}/proof`}
+      />
 
       <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
         <DialogContent>

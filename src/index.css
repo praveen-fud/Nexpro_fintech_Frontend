@@ -235,6 +235,20 @@
     );
   }
 
+  /* Marketing hero — layered mesh: indigo + cyan + violet glows over a soft
+     diagonal wash. Tints are low-opacity so dark text stays AA-readable. */
+  .bg-hero-mesh {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(800px 480px at 90% 0%, color-mix(in oklch, var(--brand-cyan) 26%, transparent), transparent 70%),
+      radial-gradient(700px 520px at 0% 20%, color-mix(in oklch, var(--brand-primary) 22%, transparent), transparent 70%),
+      radial-gradient(600px 420px at 55% 110%, color-mix(in oklch, #a855f7 16%, transparent), transparent 70%),
+      linear-gradient(160deg,
+        color-mix(in oklch, var(--brand-primary) 7%, var(--background)) 0%,
+        var(--background) 45%,
+        color-mix(in oklch, var(--brand-cyan) 9%, var(--background)) 100%);
+  }
+
   /* Tabular figures for financial amounts — digits must align in tables. */
   .font-tabular {
     font-feature-settings: "tnum" 1, "lnum" 1;

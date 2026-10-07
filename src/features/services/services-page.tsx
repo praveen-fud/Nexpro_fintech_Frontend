@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import type { LucideIcon } from "lucide-react"
-import { PlusCircle, Receipt, Zap, ShoppingBag, TrendingUp, Landmark, ShieldCheck } from "lucide-react"
+import { PlusCircle, Receipt, Zap, ShoppingBag, TrendingUp, Landmark, ShieldCheck, ArrowLeftRight } from "lucide-react"
 import { PageHeader } from "@/components/shared/page-header"
 import { Stagger, StaggerItem } from "@/components/shared/motion"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +31,7 @@ const groups: ServiceGroup[] = [
   {
     title: "Payment Services",
     items: [
+      { title: "Credit Card to Bank", description: "Pay from your credit card and send money straight to any bank account.", icon: ArrowLeftRight, to: routes.app.cardToBank },
       { title: "Bill Payments", description: "Pay utility and recurring bills from your wallet.", icon: Zap, comingSoon: true },
       { title: "Merchant Payments", description: "Pay supported merchants directly.", icon: ShoppingBag, comingSoon: true },
     ],

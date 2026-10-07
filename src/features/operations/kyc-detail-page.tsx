@@ -33,10 +33,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { usePortal } from "@/lib/portal"
 import { apiClient, ApiError } from "@/lib/api-client"
 import { formatDateTime } from "@/lib/format"
 import type { KycProfile } from "@/types/domain"
-import { routes } from "@/lib/routes"
 
 interface KycReviewDetail extends KycProfile {
   customer: { fullName: string; email: string; mobileNumber: string; customerSince: string }
@@ -81,7 +81,7 @@ function DocumentViewer({ open, onClose, fileName, blobUrl, loading }: DocumentV
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className="flex max-h-[92vh] w-full max-w-4xl flex-col gap-0 overflow-hidden p-0">
+      <DialogContent showCloseButton={false} className="flex max-h-[92vh] w-full max-w-4xl flex-col gap-0 overflow-hidden p-0">
         {/* Toolbar */}
         <div className="flex shrink-0 items-center justify-between border-b bg-card px-4 py-3">
           <div className="flex items-center gap-2 overflow-hidden">
@@ -184,6 +184,7 @@ function Section({ icon: Icon, title, children }: {
 export function KycDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const portal = usePortal()
   const queryClient = useQueryClient()
 
   const [approveOpen, setApproveOpen] = useState(false)
@@ -319,7 +320,7 @@ export function KycDetailPage() {
     <div className="pb-24">
       {/* Back navigation */}
       <button
-        onClick={() => navigate(routes.operations.kycQueue)}
+        onClick={() => navigate(portal.kycQueue)}
         className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
@@ -446,6 +447,10 @@ export function KycDetailPage() {
                 <div>
                   <dt className="text-xs text-muted-foreground">Account Number</dt>
                   <dd className="mt-0.5 font-mono text-sm font-medium text-foreground">{profile.bankAccount.accountNumberMasked}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Bank</dt>
+                  <dd className="mt-0.5 font-medium text-foreground">{profile.bankAccount.bankName || "—"}</dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted-foreground">IFSC</dt>

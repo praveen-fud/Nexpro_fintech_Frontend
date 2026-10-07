@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { Copy, Loader2, Send } from "lucide-react"
+import { Loader2, Send } from "lucide-react"
 import { toast } from "sonner"
 import { FlowLayout } from "@/layouts/flow-layout"
 import { CurrencyInput } from "@/components/shared/currency-input"
+import { CopyRow } from "@/components/shared/copy-row"
 import { FileUpload } from "@/components/shared/file-upload"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,31 +18,11 @@ import type { FundingRequest } from "@/types/domain"
 
 interface BeneficiaryInfo {
   accountName: string
-  accountNumberMasked: string
+  bankName: string
+  accountNumber: string
   ifsc: string
   reference: string
-}
-
-function CopyRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3 py-2.5">
-      <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="font-tabular text-sm font-medium text-foreground">{value}</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => {
-          navigator.clipboard.writeText(value).catch(() => {})
-          toast.success(`${label} copied`)
-        }}
-        className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label={`Copy ${label}`}
-      >
-        <Copy className="size-4" />
-      </button>
-    </div>
-  )
+  isDemo: boolean
 }
 
 export function BankTransferFundingPage() {
@@ -67,7 +48,7 @@ export function BankTransferFundingPage() {
       formData.append("amount", String(amountNumber))
       formData.append(
         "paymentDetails",
-        JSON.stringify({ referenceNumber, transferDate, reference: beneficiaryQuery.data?.reference })
+        JSON.stringify({ referenceNumber: referenceNumber.trim().toUpperCase(), transferDate })
       )
       if (proof) formData.append("proof", proof)
       return (
@@ -90,10 +71,16 @@ export function BankTransferFundingPage() {
         {beneficiaryQuery.data && (
           <div className="mt-2 divide-y divide-border">
             <CopyRow label="Account Name" value={beneficiaryQuery.data.accountName} />
-            <CopyRow label="Account Number" value={beneficiaryQuery.data.accountNumberMasked} />
+            <CopyRow label="Bank" value={beneficiaryQuery.data.bankName} />
+            <CopyRow label="Account Number" value={beneficiaryQuery.data.accountNumber} />
             <CopyRow label="IFSC" value={beneficiaryQuery.data.ifsc} />
             <CopyRow label="Reference (include in transfer note)" value={beneficiaryQuery.data.reference} />
           </div>
+        )}
+        {beneficiaryQuery.data?.isDemo && (
+          <p className="mt-3 rounded-md bg-warning-surface px-3 py-2 text-xs text-warning">
+            Demo account — set the PAYEE_BANK_* settings before going live. Do not send real money.
+          </p>
         )}
         <p className="mt-3 text-xs text-muted-foreground">
           Always include your reference so we can match your transfer. Bank transfers are confirmed through
@@ -126,12 +113,15 @@ export function BankTransferFundingPage() {
             ) : null)}
 
           <Field>
-            <FieldLabel htmlFor="referenceNumber">Transaction / UTR Number</FieldLabel>
+            <FieldLabel htmlFor="referenceNumber">UTR / Transaction ID</FieldLabel>
             <Input
               id="referenceNumber"
               value={referenceNumber}
-              onChange={(e) => setReferenceNumber(e.target.value)}
-              placeholder="e.g. UTR1234567890"
+              onChange={(e) => setReferenceNumber(e.target.value.replace(/\s/g, ""))}
+              placeholder="e.g. SBIN524012345678"
+              maxLength={22}
+              className="uppercase"
+              autoComplete="off"
             />
           </Field>
 
@@ -154,7 +144,7 @@ export function BankTransferFundingPage() {
           <Button
             className="w-full"
             size="lg"
-            disabled={amountNumber < 100 || !referenceNumber || !transferDate || createRequest.isPending}
+            disabled={amountNumber < 100 || !/^[A-Za-z0-9]{12,22}$/.test(referenceNumber) || !transferDate || createRequest.isPending}
             onClick={() => createRequest.mutate()}
           >
             {createRequest.isPending && <Loader2 className="size-4 animate-spin" />}

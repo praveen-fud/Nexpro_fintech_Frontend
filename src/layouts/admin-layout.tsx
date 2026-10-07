@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom"
 import {
   LayoutDashboard,
   Users,
+  Inbox,
   ShieldCheck,
   Wallet,
   WalletCards,
@@ -21,6 +22,7 @@ import { routes } from "@/lib/routes"
 
 const navItems: PortalNavItem[] = [
   { label: "Dashboard", to: routes.admin.dashboard, icon: LayoutDashboard, exact: true },
+  { label: "All Requests", to: routes.admin.requests, icon: Inbox },
   { label: "Customers", to: routes.admin.customers, icon: Users },
   { label: "Operations Team", to: routes.admin.operationsUsers, icon: UserCog },
   { label: "Funding", to: routes.admin.funding, icon: Wallet },
