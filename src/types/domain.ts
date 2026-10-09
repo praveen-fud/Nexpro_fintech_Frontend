@@ -1,5 +1,5 @@
 /**
- * Core domain types shared across the Nexpro Fintech customer, operations,
+ * Core domain types shared across the Nexpro Paytech customer, operations,
  * and admin surfaces. These mirror the backend Pydantic response schemas —
  * keep them in sync with apps/Backend/app/schemas.
  */

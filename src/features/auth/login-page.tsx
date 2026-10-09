@@ -54,7 +54,7 @@ export function LoginPage() {
       <FormStagger>
         <FormItem className="mb-7 text-center lg:text-left">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Sign in</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Welcome back to Nexpro Fintech.</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">Welcome back to Nexpro Paytech.</p>
         </FormItem>
 
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>

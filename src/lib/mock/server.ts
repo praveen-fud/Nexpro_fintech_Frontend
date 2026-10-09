@@ -194,7 +194,7 @@ export function startMockServer(): void {
   mock.onGet("/funding-requests/bank-transfer/beneficiary").reply(
     guarded(["CUSTOMER"], (user) =>
       ok({
-        accountName: "Nexpro Fintech Pvt Ltd",
+        accountName: "Nexpro Paytech Pvt Ltd",
         accountNumberMasked: "XXXXXXXX4821",
         ifsc: "NXPR0000001",
         reference: `NXP-${user.mobileNumber.slice(-5)}-${Math.random().toString(16).slice(2, 6).toUpperCase()}`,

@@ -19,8 +19,8 @@ export function MarketingLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 lg:px-8">
           <Link to={routes.home}>
             <Logo />
           </Link>
@@ -132,8 +132,8 @@ export function MarketingLayout() {
             </div>
           </div>
           <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; {currentYear} Nexpro Fintech. All rights reserved.</p>
-            <p>Nexpro Fintech is a product demonstration environment. No real funds are processed.</p>
+            <p>&copy; {currentYear} Nexpro Paytech. All rights reserved.</p>
+            <p>Nexpro Paytech is a product demonstration environment. No real funds are processed.</p>
           </div>
         </div>
       </footer>

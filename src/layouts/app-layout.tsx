@@ -62,7 +62,7 @@ export function AppLayout() {
     .toUpperCase()
 
   return (
-    <div className="bg-app-mesh flex min-h-screen w-full">
+    <div className="bg-app-mesh flex h-dvh w-full overflow-hidden">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar shadow-[1px_0_0_0_rgba(16,24,40,0.04),4px_0_24px_-12px_rgba(16,24,40,0.08)] lg:flex">
         <div className="flex h-16 items-center border-b border-sidebar-border px-5">
           <Logo />
@@ -102,8 +102,8 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-4 backdrop-blur-sm lg:px-6">
+      <div className="flex h-full min-w-0 flex-1 flex-col">
+        <header className="z-30 flex h-16 shrink-0 items-center justify-between border-b border-border bg-card/90 px-4 backdrop-blur-sm lg:px-6">
           <div className="lg:hidden">
             <Logo />
           </div>
@@ -119,7 +119,7 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden p-4 pb-24 lg:p-6 lg:pb-6">
+        <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 pb-24 lg:p-6 lg:pb-6">
           <Outlet />
         </main>
 

@@ -9,7 +9,7 @@ export function ComingSoon({ title, description }: { title: string; description?
       <div className="space-y-1">
         <p className="text-base font-semibold text-foreground">{title}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          {description ?? "This area is coming soon as the Nexpro Fintech build continues."}
+          {description ?? "This area is coming soon as the Nexpro Paytech build continues."}
         </p>
       </div>
     </div>

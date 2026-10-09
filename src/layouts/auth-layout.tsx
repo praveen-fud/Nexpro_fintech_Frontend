@@ -85,7 +85,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           className="relative z-10 text-xs text-white/40"
         >
           <motion.span variants={panelItem}>
-            Nexpro Fintech is a product preview environment. No real funds are processed.
+            Nexpro Paytech is a product preview environment. No real funds are processed.
           </motion.span>
         </motion.p>
       </div>

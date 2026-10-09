@@ -25,7 +25,7 @@ const faqs = [
     a: "Pending funding hasn't been approved by Operations yet, so it isn't usable. Only your Available Balance can be spent.",
   },
   {
-    q: "Is my card information stored by Nexpro Fintech?",
+    q: "Is my card information stored by Nexpro Paytech?",
     a: "No. We never store full card numbers or CVV. Only a masked reference is kept for your records.",
   },
   {
@@ -97,7 +97,7 @@ export function SupportPage() {
                 <Mail className="size-5" />
               </span>
               <p className="mt-3 text-sm font-semibold text-foreground">Email</p>
-              <p className="mt-1 text-sm text-muted-foreground">support@nexprofintech.example</p>
+              <p className="mt-1 text-sm text-muted-foreground">support@nexpropaytech.example</p>
             </div>
             <div className="group rounded-lg border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
               <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">

@@ -111,7 +111,7 @@ export function LandingPage() {
             transition={{ duration: 0.5 }}
           >
             <p className="mb-4 inline-flex items-center rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-              Nexpro Fintech
+              Nexpro Paytech
             </p>
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               Your money. <br />

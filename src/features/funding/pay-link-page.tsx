@@ -95,7 +95,7 @@ export function PayLinkPage() {
           </>
         )}
       </div>
-      <p className="mt-6 text-xs text-muted-foreground">Payments are verified by Nexpro Fintech before crediting.</p>
+      <p className="mt-6 text-xs text-muted-foreground">Payments are verified by Nexpro Paytech before crediting.</p>
     </div>
   )
 }

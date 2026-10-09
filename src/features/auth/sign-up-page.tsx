@@ -71,7 +71,7 @@ export function SignUpPage() {
       <FormStagger>
         <FormItem className="mb-7 text-center lg:text-left">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Create your account</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">Get started with Nexpro Fintech in a few minutes.</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">Get started with Nexpro Paytech in a few minutes.</p>
         </FormItem>
 
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>

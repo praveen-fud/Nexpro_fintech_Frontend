@@ -72,7 +72,7 @@ export function CreditCardFundingPage() {
         order_id: order.orderId,
         amount: order.amountPaise,
         currency: order.currency,
-        name: "Nexpro Fintech",
+        name: "Nexpro Paytech",
         description: "Wallet top-up",
         prefill: { name: user?.fullName, email: user?.email, contact: user?.mobileNumber },
         theme: { color: "#4f46e5" },

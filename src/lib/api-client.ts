@@ -79,7 +79,7 @@ apiClient.interceptors.response.use(
     const data = error.response?.data as Partial<ApiErrorPayload> | undefined
 
     if (!error.response) {
-      throw new ApiError(0, { message: "Unable to reach Nexpro Fintech. Check your connection and try again." })
+      throw new ApiError(0, { message: "Unable to reach Nexpro Paytech. Check your connection and try again." })
     }
 
     throw new ApiError(status, {
