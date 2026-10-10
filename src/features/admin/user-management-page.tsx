@@ -59,7 +59,7 @@ function RoleBadge({ role }: { role: StaffRole }) {
       variant={role === "SUPER_ADMIN" ? "default" : "secondary"}
       className={
         role === "SUPER_ADMIN"
-          ? "bg-indigo-600 text-white hover:bg-indigo-700"
+          ? "bg-primary text-primary-foreground hover:bg-brand-primary-dark"
           : "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400"
       }
     >

@@ -1,5 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios"
-import { getAccessToken, setAccessToken } from "./auth-token"
+import { flagSessionExpired, getAccessToken, notifySessionExpired, setAccessToken } from "./auth-token"
 
 export interface ApiErrorPayload {
   message: string
@@ -45,7 +45,7 @@ apiClient.interceptors.request.use((config) => {
 
 let refreshPromise: Promise<string | null> | null = null
 
-async function refreshAccessToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<string | null> {
   if (!refreshPromise) {
     refreshPromise = axios
       .post<{ accessToken: string }>(`${API_BASE}/auth/refresh`, null, { withCredentials: true })
@@ -63,7 +63,10 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retried && !originalRequest.url?.includes("/auth/")) {
+    // Credential endpoints never get a silent retry (a wrong password must not
+    // trigger a refresh loop). /auth/heartbeat is a normal authenticated call.
+    const isCredentialCall = /\/auth\/(login|refresh|logout|sign-up|verify-otp)/.test(originalRequest?.url ?? "")
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retried && !isCredentialCall) {
       originalRequest._retried = true
       const newToken = await refreshAccessToken()
       if (newToken) {
@@ -72,7 +75,10 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return apiClient(originalRequest)
       }
+      // The session is gone (idle timeout / absolute cap / revoked).
+      flagSessionExpired()
       setAccessToken(null)
+      notifySessionExpired()
     }
 
     const status = error.response?.status ?? 0

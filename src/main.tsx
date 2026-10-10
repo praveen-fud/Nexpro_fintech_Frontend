@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from "@/features/auth/auth-context"
+import { SessionTimeout } from "@/features/auth/session-timeout"
 import { DemoModeBadge } from "@/components/shared/demo-mode-badge"
 import { queryClient } from "@/lib/query-client"
 import { isDemoMode } from "@/lib/demo-mode"
@@ -30,6 +31,7 @@ async function bootstrap() {
           <AuthProvider>
             <TooltipProvider delayDuration={200}>
               <App />
+              <SessionTimeout />
               <Toaster position="top-right" richColors closeButton />
               {isDemoMode && <DemoModeBadge />}
             </TooltipProvider>

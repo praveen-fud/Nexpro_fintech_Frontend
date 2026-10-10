@@ -168,7 +168,7 @@ export function LandingPage() {
                 <span className="absolute top-5 right-5 text-sm font-semibold text-muted-foreground/40">
                   0{i + 1}
                 </span>
-                <div className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+                <div className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
                   <step.icon className="size-5" aria-hidden="true" />
                 </div>
                 <p className="mt-4 text-sm font-semibold text-foreground">{step.title}</p>
@@ -309,7 +309,7 @@ export function LandingPage() {
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute -left-24 -top-32 size-[28rem] animate-aurora-1 rounded-full bg-brand-primary/50 blur-3xl" />
           <div className="absolute -right-20 top-0 size-[26rem] animate-aurora-2 rounded-full bg-brand-cyan/40 blur-3xl" />
-          <div className="absolute bottom-[-10rem] left-1/3 size-[30rem] animate-aurora-3 rounded-full bg-fuchsia-500/30 blur-3xl" />
+          <div className="absolute bottom-[-10rem] left-1/3 size-[30rem] animate-aurora-3 rounded-full bg-brand-gold/25 blur-3xl" />
           {/* Moving grid, faded at the edges */}
           <div
             className="absolute inset-0 animate-grid-pan opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
@@ -320,7 +320,7 @@ export function LandingPage() {
             }}
           />
           {/* Slow-rotating conic ring */}
-          <div className="absolute left-1/2 top-1/2 size-[44rem] -translate-x-1/2 -translate-y-1/2 animate-[spin_40s_linear_infinite] rounded-full opacity-30 [background:conic-gradient(from_0deg,transparent,#06b6d4,transparent_35%,#6366f1,transparent_70%,#d946ef,transparent)] [mask-image:radial-gradient(circle,transparent_58%,black_60%,transparent_66%)]" />
+          <div className="absolute left-1/2 top-1/2 size-[44rem] -translate-x-1/2 -translate-y-1/2 animate-[spin_40s_linear_infinite] rounded-full opacity-30 [background:conic-gradient(from_0deg,transparent,#6ee7b7,transparent_35%,#17a673,transparent_70%,#e8cb7e,transparent)] [mask-image:radial-gradient(circle,transparent_58%,black_60%,transparent_66%)]" />
         </div>
 
         {/* Floating business chips */}
@@ -333,7 +333,7 @@ export function LandingPage() {
             <ShieldCheck className="size-4 text-emerald-300" /> KYC verified
           </div>
           <div className="absolute bottom-[18%] left-[14%] flex animate-float-y-delayed items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
-            <Smartphone className="size-4 text-indigo-300" /> UPI received
+            <Smartphone className="size-4 text-brand-gold-light" /> UPI received
           </div>
           <div className="absolute bottom-[22%] right-[12%] flex animate-float-y items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
             <Lock className="size-4 text-brand-cyan" /> Bank-grade security
@@ -353,7 +353,7 @@ export function LandingPage() {
           </p>
           <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
             Ready to{" "}
-            <span className="bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-emerald-200 via-teal-200 to-amber-200 bg-clip-text text-transparent">
               get started?
             </span>
           </h2>

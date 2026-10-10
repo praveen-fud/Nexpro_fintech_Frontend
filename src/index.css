@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,7 +13,7 @@
 
 @theme inline {
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Manrope Variable", "Manrope", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
   /* shadcn semantic tokens -> brand palette */
   --color-background: var(--background);
@@ -48,6 +49,10 @@
   --color-brand-primary-dark: var(--brand-primary-dark);
   --color-brand-deep-indigo: var(--brand-deep-indigo);
   --color-brand-cyan: var(--brand-cyan);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-light: var(--brand-gold-light);
+  --color-brand-mint: var(--brand-mint);
+  --color-brand-mint-strong: var(--brand-mint-strong);
 
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
@@ -110,32 +115,39 @@
 
 :root {
   /* Base surfaces */
-  --background: #f7f9fc;
-  --foreground: #101828;
+  --background: #f2f9f6;
+  --foreground: #0d1f18;
   --card: #ffffff;
-  --card-foreground: #101828;
+  --card-foreground: #0d1f18;
   --popover: #ffffff;
-  --popover-foreground: #101828;
+  --popover-foreground: #0d1f18;
 
   /* Brand */
-  --brand-primary: #4f46e5;
-  --brand-primary-dark: #3730a3;
-  --brand-deep-indigo: #312e81;
-  --brand-cyan: #06b6d4;
+  --brand-primary: #0b5036;
+  --brand-primary-dark: #073b28;
+  --brand-deep-indigo: #04281b;
+  --brand-cyan: #17a673;
+  /* Logo gold (lotus + PAYTECH wordmark). */
+  --brand-gold: #a88838;
+  --brand-gold-light: #e8cb7e;
+  /* Logo light green: the mint tint of the Nexpro Paytech artwork. */
+  --brand-mint: #ecfcf8;
+  --brand-mint-strong: #6ee7b7;
+  --card-gradient: linear-gradient(155deg, #ffffff 0%, #ffffff 42%, var(--brand-mint) 100%);
 
-  --primary: #4f46e5;
+  --primary: #0b5036;
   --primary-foreground: #ffffff;
-  --secondary: #eef2ff;
-  --secondary-foreground: #312e81;
-  --muted: #f2f4f7;
-  --muted-foreground: #667085;
-  --accent: #ecfeff;
-  --accent-foreground: #0e7490;
+  --secondary: #e2f5ec;
+  --secondary-foreground: #073b28;
+  --muted: #edf4f1;
+  --muted-foreground: #54665e;
+  --accent: #ecfcf8;
+  --accent-foreground: #0b5036;
   --destructive: #f04438;
   --destructive-foreground: #ffffff;
-  --border: #e4e7ec;
-  --input: #e4e7ec;
-  --ring: #4f46e5;
+  --border: #dbe8e2;
+  --input: #d3e2db;
+  --ring: #17a673;
 
   /* Semantic status colors */
   --success: #12b76a;
@@ -152,40 +164,43 @@
   --info-surface: #eff8ff;
 
   /* Dark application surfaces (used for wallet cards, dark mode) */
-  --app-dark-bg: #0b1020;
-  --app-dark-surface: #111827;
+  --app-dark-bg: #04140e;
+  --app-dark-surface: #0a2119;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #101828;
-  --sidebar-primary: #4f46e5;
+  --sidebar-foreground: #0d1f18;
+  --sidebar-primary: #0b5036;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef2ff;
-  --sidebar-accent-foreground: #312e81;
-  --sidebar-border: #e4e7ec;
-  --sidebar-ring: #4f46e5;
+  --sidebar-accent: #e2f5ec;
+  --sidebar-accent-foreground: #073b28;
+  --sidebar-border: #dbe8e2;
+  --sidebar-ring: #17a673;
 }
 
 .dark {
-  --background: #0b1020;
-  --foreground: #f0f2f8;
-  --card: #111827;
-  --card-foreground: #f0f2f8;
-  --popover: #111827;
-  --popover-foreground: #f0f2f8;
+  --background: #06130e;
+  --foreground: #eaf6f0;
+  --card: #0c1d16;
+  --card-foreground: #eaf6f0;
+  --popover: #0c1d16;
+  --popover-foreground: #eaf6f0;
 
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #1e2434;
-  --secondary-foreground: #c7d2fe;
-  --muted: #1a2030;
-  --muted-foreground: #94a3b8;
-  --accent: #0e3a44;
-  --accent-foreground: #67e8f9;
+  --brand-mint: #0f2a26;
+  --card-gradient: linear-gradient(155deg, #0c1d16 0%, #0c1d16 50%, color-mix(in oklch, var(--brand-mint-strong) 9%, #0c1d16) 100%);
+
+  --primary: #34d399;
+  --primary-foreground: #04281b;
+  --secondary: #12281f;
+  --secondary-foreground: #bff0da;
+  --muted: #102219;
+  --muted-foreground: #8fa89d;
+  --accent: #0f2e23;
+  --accent-foreground: #6ee7b7;
   --destructive: #f04438;
   --destructive-foreground: #ffffff;
-  --border: #232a3b;
-  --input: #232a3b;
-  --ring: #6366f1;
+  --border: #1c3329;
+  --input: #1c3329;
+  --ring: #34d399;
 
   --success: #12b76a;
   --success-foreground: #ffffff;
@@ -200,14 +215,14 @@
   --info-foreground: #ffffff;
   --info-surface: #0d2745;
 
-  --sidebar: #111827;
-  --sidebar-foreground: #f0f2f8;
-  --sidebar-primary: #6366f1;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e2434;
-  --sidebar-accent-foreground: #c7d2fe;
-  --sidebar-border: #232a3b;
-  --sidebar-ring: #6366f1;
+  --sidebar: #0a1812;
+  --sidebar-foreground: #eaf6f0;
+  --sidebar-primary: #34d399;
+  --sidebar-primary-foreground: #04281b;
+  --sidebar-accent: #12281f;
+  --sidebar-accent-foreground: #bff0da;
+  --sidebar-border: #1c3329;
+  --sidebar-ring: #34d399;
 }
 
 @layer base {
@@ -229,8 +244,8 @@
   .bg-brand-gradient {
     background-image: linear-gradient(
       135deg,
-      var(--brand-deep-indigo) 0%,
-      var(--brand-primary) 55%,
+      var(--brand-primary) 0%,
+      #0f7a52 55%,
       var(--brand-cyan) 100%
     );
   }
@@ -240,13 +255,43 @@
   .bg-hero-mesh {
     background-color: var(--background);
     background-image:
-      radial-gradient(800px 480px at 90% 0%, color-mix(in oklch, var(--brand-cyan) 26%, transparent), transparent 70%),
-      radial-gradient(700px 520px at 0% 20%, color-mix(in oklch, var(--brand-primary) 22%, transparent), transparent 70%),
-      radial-gradient(600px 420px at 55% 110%, color-mix(in oklch, #a855f7 16%, transparent), transparent 70%),
+      radial-gradient(800px 480px at 90% 0%, color-mix(in oklch, var(--brand-mint-strong) 40%, transparent), transparent 70%),
+      radial-gradient(700px 520px at 0% 20%, color-mix(in oklch, var(--brand-gold-light) 26%, transparent), transparent 70%),
+      radial-gradient(700px 480px at 55% 110%, color-mix(in oklch, var(--brand-mint-strong) 34%, transparent), transparent 70%),
       linear-gradient(160deg,
         color-mix(in oklch, var(--brand-primary) 7%, var(--background)) 0%,
         var(--background) 45%,
-        color-mix(in oklch, var(--brand-cyan) 9%, var(--background)) 100%);
+        color-mix(in oklch, var(--brand-mint-strong) 16%, var(--background)) 100%);
+  }
+
+  /* Wallet / hero cards — indigo base with the logo's mint as a luminous
+     corner glow. Glow sits top-right (icons only) so white text keeps AA. */
+  .bg-card-aurora {
+    background-color: var(--brand-deep-indigo);
+    background-image:
+      radial-gradient(110% 85% at 100% 0%, color-mix(in oklch, var(--brand-mint-strong) 42%, transparent) 0%, transparent 58%),
+      radial-gradient(80% 70% at 0% 115%, color-mix(in oklch, var(--brand-gold) 30%, transparent) 0%, transparent 62%),
+      linear-gradient(135deg, #04281b 0%, #0b5036 55%, #0f7a52 100%);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--brand-gold-light) 28%, transparent),
+      inset 0 1px 0 color-mix(in oklch, white 22%, transparent);
+  }
+  /* Fine film grain: gradients feel printed, not flat. */
+  .bg-card-aurora::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Mint-washed surface for light cards. */
+  .surface-mint {
+    background-image: var(--card-gradient);
+    border-color: color-mix(in oklch, var(--brand-mint-strong) 35%, var(--border));
   }
 
   /* Tabular figures for financial amounts — digits must align in tables. */
@@ -261,9 +306,9 @@
   .bg-app-mesh {
     background-color: var(--background);
     background-image:
-      radial-gradient(900px 500px at 100% -10%, color-mix(in oklch, var(--brand-cyan) 10%, transparent), transparent),
-      radial-gradient(700px 500px at -10% 15%, color-mix(in oklch, var(--brand-primary) 8%, transparent), transparent),
-      radial-gradient(800px 600px at 110% 110%, color-mix(in oklch, var(--brand-deep-indigo) 6%, transparent), transparent);
+      radial-gradient(900px 500px at 100% -10%, color-mix(in oklch, var(--brand-mint-strong) 24%, transparent), transparent),
+      radial-gradient(700px 500px at -10% 15%, color-mix(in oklch, var(--brand-gold-light) 14%, transparent), transparent),
+      radial-gradient(800px 600px at 110% 110%, color-mix(in oklch, var(--brand-mint-strong) 16%, transparent), transparent);
     background-attachment: fixed;
   }
 

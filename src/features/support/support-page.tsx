@@ -93,21 +93,21 @@ export function SupportPage() {
         <TabsContent value="contact" className="mt-5">
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="group rounded-lg border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
                 <Mail className="size-5" />
               </span>
               <p className="mt-3 text-sm font-semibold text-foreground">Email</p>
               <p className="mt-1 text-sm text-muted-foreground">support@nexpropaytech.example</p>
             </div>
             <div className="group rounded-lg border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
                 <Phone className="size-5" />
               </span>
               <p className="mt-3 text-sm font-semibold text-foreground">Phone</p>
               <p className="mt-1 text-sm text-muted-foreground">+91 1800-000-000 (Mon–Fri, 9am–6pm)</p>
             </div>
             <div className="group rounded-lg border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+              <span className="flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
                 <MessageSquare className="size-5" />
               </span>
               <p className="mt-3 text-sm font-semibold text-foreground">Chat</p>

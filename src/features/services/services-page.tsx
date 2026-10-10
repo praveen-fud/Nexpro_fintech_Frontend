@@ -52,7 +52,7 @@ function ServiceCard({ item }: { item: ServiceItem }) {
       <div className="flex items-start justify-between">
         <span
           className={cn(
-            "flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300",
+            "flex size-10 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300",
             !item.comingSoon && "group-hover:scale-110"
           )}
         >

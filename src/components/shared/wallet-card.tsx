@@ -62,7 +62,7 @@ export function WalletCard({
   // Shared classes for each face — no overflow:hidden here so the
   // perspective transform is not clipped mid-flip
   const face =
-    "bg-brand-gradient absolute inset-0 flex flex-col justify-between rounded-[20px] p-6 text-white sm:p-7"
+    "bg-card-aurora absolute inset-0 flex flex-col justify-between rounded-[20px] p-6 text-white sm:p-7"
 
   // Front folds away when hidden→false, unfolds when hidden→true
   const frontAnim  = { rotateY: hidden ? 0 : 90 }
@@ -169,7 +169,7 @@ export function WalletCard({
             <p className="text-[10px] uppercase tracking-widest text-white/45">Wallet ID</p>
             <p className="font-tabular text-sm text-white/75">{walletId ?? "NXP-••••-••••"}</p>
           </div>
-          <span className="text-sm font-semibold tracking-wide text-white/75">NEXPRO</span>
+          <span className="font-heading text-sm font-semibold tracking-[0.2em] text-brand-gold-light">NEXPRO</span>
         </div>
       </motion.div>
 
@@ -220,7 +220,7 @@ export function WalletCard({
             <p className="text-[10px] uppercase tracking-widest text-white/45">Wallet ID</p>
             <p className="font-tabular text-sm text-white/75">{walletId ?? "NXP-••••-••••"}</p>
           </div>
-          <span className="text-sm font-semibold tracking-wide text-white/75">NEXPRO</span>
+          <span className="font-heading text-sm font-semibold tracking-[0.2em] text-brand-gold-light">NEXPRO</span>
         </div>
       </motion.div>
     </div>

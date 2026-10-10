@@ -22,3 +22,40 @@ export function onAccessTokenChange(listener: (token: string | null) => void): (
   listeners.add(listener)
   return () => listeners.delete(listener)
 }
+
+// ── Session expiry signalling ──────────────────────────────────────────────
+// The api client raises this when the server ends the session (idle timeout,
+// absolute cap, revoked) and a silent token refresh can no longer save it.
+// The auth context listens and signs the user out.
+const expiryListeners = new Set<() => void>()
+
+export function notifySessionExpired(): void {
+  for (const listener of expiryListeners) listener()
+}
+
+export function onSessionExpired(listener: () => void): () => void {
+  expiryListeners.add(listener)
+  return () => expiryListeners.delete(listener)
+}
+
+/** One-shot flag (not sensitive) so the login page can explain why the user
+ * was signed out. sessionStorage: survives the redirect, dies with the tab. */
+const EXPIRED_FLAG = "nexpro_session_expired"
+
+export function flagSessionExpired(): void {
+  try {
+    sessionStorage.setItem(EXPIRED_FLAG, "1")
+  } catch {
+    /* storage unavailable — the redirect alone still signs the user out */
+  }
+}
+
+export function consumeSessionExpiredFlag(): boolean {
+  try {
+    const set = sessionStorage.getItem(EXPIRED_FLAG) === "1"
+    sessionStorage.removeItem(EXPIRED_FLAG)
+    return set
+  } catch {
+    return false
+  }
+}

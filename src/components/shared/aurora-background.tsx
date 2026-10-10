@@ -63,8 +63,8 @@ export function AuroraBackground({ className, interactive = true, tone = "dark" 
       <motion.div style={{ x, y }} className="absolute inset-0">
         <div
           className={cn(
-            "animate-aurora-1 absolute top-[-10%] left-[-10%] size-[60%] rounded-full bg-brand-cyan/40 blur-3xl",
-            isLight && "opacity-40"
+            "animate-aurora-1 absolute top-[-10%] left-[-10%] size-[60%] rounded-full bg-brand-mint-strong/50 blur-3xl",
+            isLight && "opacity-60"
           )}
         />
         <div
@@ -75,8 +75,8 @@ export function AuroraBackground({ className, interactive = true, tone = "dark" 
         />
         <div
           className={cn(
-            "animate-aurora-3 absolute bottom-[-20%] left-[10%] size-[55%] rounded-full bg-brand-deep-indigo/60 blur-3xl",
-            isLight && "opacity-20"
+            "animate-aurora-3 absolute bottom-[-20%] left-[10%] size-[55%] rounded-full bg-brand-cyan/40 blur-3xl",
+            isLight && "opacity-30"
           )}
         />
       </motion.div>

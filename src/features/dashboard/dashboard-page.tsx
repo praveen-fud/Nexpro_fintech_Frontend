@@ -31,7 +31,7 @@ function getQuickActions(addMoneyTo: string) {
     label: "Add Money",
     to: addMoneyTo,
     icon: PlusCircle,
-    tone: "bg-gradient-to-br from-primary/15 to-brand-cyan/10 text-primary",
+    tone: "bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary",
   },
   {
     label: "Transactions",
@@ -43,7 +43,7 @@ function getQuickActions(addMoneyTo: string) {
     label: "Services",
     to: routes.app.services,
     icon: Grid2x2,
-    tone: "bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400",
+    tone: "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
   },
   {
     label: "Profile",

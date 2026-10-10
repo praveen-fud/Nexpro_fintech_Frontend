@@ -1,12 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { apiClient } from "@/lib/api-client"
-import { setAccessToken } from "@/lib/auth-token"
+import { onSessionExpired, setAccessToken } from "@/lib/auth-token"
 import type { User } from "@/types/domain"
 
 interface LoginPayload {
   identifier: string
   password: string
-  rememberMe?: boolean
 }
 
 interface AuthContextValue {
@@ -15,6 +14,9 @@ interface AuthContextValue {
   isAuthenticated: boolean
   login: (payload: LoginPayload) => Promise<User>
   logout: () => Promise<void>
+  /** Drop the session locally (no API call) — used when another tab or the
+   * server has already ended it. */
+  endSession: () => void
   refreshUser: () => Promise<void>
 }
 
@@ -58,14 +60,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const endSession = useCallback(() => {
+    setAccessToken(null)
+    setUser(null)
+  }, [])
+
+  // Server ended the session and a silent refresh could not rescue it.
+  useEffect(() => onSessionExpired(endSession), [endSession])
+
   const refreshUser = useCallback(async () => {
     const meRes = await apiClient.get<User>("/users/me")
     setUser(meRes.data)
   }, [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isLoading, isAuthenticated: !!user, login, logout, refreshUser }),
-    [user, isLoading, login, logout, refreshUser]
+    () => ({ user, isLoading, isAuthenticated: !!user, login, logout, endSession, refreshUser }),
+    [user, isLoading, login, logout, endSession, refreshUser]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

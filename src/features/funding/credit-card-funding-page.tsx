@@ -75,7 +75,7 @@ export function CreditCardFundingPage() {
         name: "Nexpro Paytech",
         description: "Wallet top-up",
         prefill: { name: user?.fullName, email: user?.email, contact: user?.mobileNumber },
-        theme: { color: "#4f46e5" },
+        theme: { color: "#0b5036" },
         handler: (res) =>
           verify.mutate({
             orderId: res.razorpay_order_id,

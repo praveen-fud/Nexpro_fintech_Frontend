@@ -28,7 +28,7 @@ interface AuditLogListResponse {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const ROLE_COLORS: Record<string, string> = {
-  SUPER_ADMIN: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+  SUPER_ADMIN: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
   OPERATIONS: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
 }
 

@@ -77,7 +77,7 @@ export function AppLayout() {
                 className={cn(
                   "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-gradient-to-r from-primary/10 to-brand-cyan/5 text-primary shadow-[inset_0_0_0_1px_rgba(79,70,229,0.12)]"
+                    ? "bg-gradient-to-r from-primary/10 to-brand-mint-strong/20 text-primary shadow-[inset_0_0_0_1px_rgba(11,80,54,0.14)]"
                     : "text-muted-foreground hover:translate-x-0.5 hover:bg-muted hover:text-foreground"
                 )}
                 aria-current={active ? "page" : undefined}

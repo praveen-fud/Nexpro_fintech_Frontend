@@ -1,24 +1,23 @@
-import { useState } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { ArrowRight, AtSign, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldLabel, FieldError, FieldGroup } from "@/components/ui/field"
 import { IconInput } from "@/components/shared/icon-input"
 import { PasswordInput } from "@/components/shared/password-input"
 import { AuthLayout, FormItem, FormStagger } from "@/layouts/auth-layout"
 import { useAuth } from "@/features/auth/auth-context"
 import { ApiError } from "@/lib/api-client"
+import { consumeSessionExpiredFlag } from "@/lib/auth-token"
 import { homeForRole, pathAllowedForRole, routes } from "@/lib/routes"
 
 const loginSchema = z.object({
   identifier: z.string().min(3, "Enter your email or mobile number"),
   password: z.string().min(1, "Enter your password"),
-  rememberMe: z.boolean(),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -31,8 +30,16 @@ export function LoginPage() {
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { identifier: "", password: "", rememberMe: false },
+    defaultValues: { identifier: "", password: "" },
   })
+
+  useEffect(() => {
+    if (consumeSessionExpiredFlag()) {
+      toast.info("You were signed out after 15 minutes of inactivity. Please sign in again to continue.", {
+        duration: 8000,
+      })
+    }
+  }, [])
 
   const onSubmit = async (values: LoginForm) => {
     setSubmitting(true)
@@ -83,21 +90,6 @@ export function LoginPage() {
                 <PasswordInput id="password" autoComplete="current-password" {...form.register("password")} />
                 <FieldError errors={[form.formState.errors.password]} />
               </Field>
-            </FormItem>
-
-            <FormItem>
-              <Controller
-                control={form.control}
-                name="rememberMe"
-                render={({ field }) => (
-                  <Field orientation="horizontal">
-                    <Checkbox id="rememberMe" checked={field.value} onCheckedChange={field.onChange} />
-                    <FieldLabel htmlFor="rememberMe" className="font-normal">
-                      Remember me on this device
-                    </FieldLabel>
-                  </Field>
-                )}
-              />
             </FormItem>
 
             <FormItem>

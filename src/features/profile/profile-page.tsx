@@ -54,7 +54,7 @@ function Row({
 }) {
   const content = (
     <div className="group flex items-center gap-3 py-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
         <Icon className="size-4.5" aria-hidden="true" />
       </span>
       <div className="min-w-0 flex-1">
@@ -104,7 +104,7 @@ export function ProfilePage() {
 
       <div className="space-y-5">
         <StaggerItem>
-          <div className="bg-brand-gradient relative overflow-hidden rounded-[20px] p-6 text-white">
+          <div className="bg-card-aurora relative overflow-hidden rounded-[20px] p-6 text-white">
             <div className="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-white/10" />
             <div className="relative z-10 flex items-center gap-4">
               <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white/15 text-lg font-semibold">

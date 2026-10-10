@@ -44,7 +44,7 @@ export function AddMoneyPage() {
                 onClick={() => navigate(method.to)}
                 className="group flex w-full items-center gap-4 rounded-lg border border-border bg-card p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
               >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-cyan/15 text-primary transition-transform duration-300 group-hover:scale-110">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-brand-mint-strong/30 text-primary transition-transform duration-300 group-hover:scale-110">
                   <method.icon className="size-6" aria-hidden="true" />
                 </span>
                 <span className="flex-1">

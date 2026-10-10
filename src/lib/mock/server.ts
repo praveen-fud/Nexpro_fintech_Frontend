@@ -134,6 +134,9 @@ export function startMockServer(): void {
     return ok({ accessToken: newToken() })
   })
 
+  // Idle-timeout heartbeat — the mock session never idles out server-side.
+  mock.onPost("/auth/heartbeat").reply(() => [204, null])
+
   mock.onPost("/auth/logout").reply(() => {
     logout()
     return [204, null]
