@@ -11,9 +11,12 @@
 #   2. $uri/index.html — the pre-rendered page for that route
 #   3. /index.html     — client-side routing for anything else
 #
-# Unknown URLs fall through to step 3 but are returned with a 404 status
-# (see error_page below), so React renders the branded 404 page while search
-# engines still see a genuine 404 rather than a soft-404 answering 200.
+# Step 3 answers 200, not 404 — a soft-404. That is deliberate: forcing a
+# 404 status here would also hit /login, /sign-up and every /app route,
+# none of which have a pre-rendered file, and answering 404 for a working
+# page is worse than a soft-404 on a broken one. The React 404 page carries
+# noindex, and robots.txt disallows the signed-in areas, so crawlers do not
+# accumulate these.
 
 server {
     listen ${PORT};
@@ -41,8 +44,6 @@ server {
     location = /sitemap.xml { add_header Cache-Control "public, max-age=3600"; }
     location = /robots.txt  { add_header Cache-Control "public, max-age=3600"; }
     location = /llms.txt    { add_header Cache-Control "public, max-age=3600"; }
-
-    error_page 404 /index.html;
 
     gzip on;
     gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
