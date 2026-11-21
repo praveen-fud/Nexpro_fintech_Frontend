@@ -16,7 +16,8 @@ import { company } from "@/config/site"
 import { Seo } from "@/components/shared/seo"
 import { breadcrumbSchema } from "@/lib/structured-data"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
-import { Section } from "./marketing-ui"
+import { SupportIllustration } from "@/components/shared/support-illustration"
+import { Section, SectionHeading } from "./marketing-ui"
 
 const contactSchema = z.object({
   enquirerType: z.enum(["BUSINESS", "INDIVIDUAL"]),
@@ -63,6 +64,25 @@ const channels = [
       .join(", "),
   },
 ].filter(Boolean) as { icon: typeof Mail; label: string; value: string; href?: string }[]
+
+const supportAnswers = [
+  {
+    q: "How long until someone replies?",
+    a: "Two working days at the outside, usually sooner. You get a reference number straight away either way.",
+  },
+  {
+    q: "Which services can I actually use today?",
+    a: "Add Money and Card to Bank. Everything else on the site is marked “Coming soon” and we mean it literally — each one is waiting on an authorisation or a partner.",
+  },
+  {
+    q: "Can you tell me when a service will launch?",
+    a: "We can tell you where it is in the queue and what it is waiting on. We will not give you a date we are not confident in.",
+  },
+  {
+    q: "Do you work with businesses as well as individuals?",
+    a: "Yes. Tell us which you are in the form and the right person picks it up.",
+  },
+]
 
 const CONTACT_TRAIL = [
   { label: "Home", path: "/" },
@@ -340,6 +360,44 @@ export function ContactPage() {
               </p>
             </div>
           </div>
+        </div>
+      </Section>
+
+      <Section className="border-t border-border bg-card">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <SectionHeading
+              align="left"
+              eyebrow="Before you write"
+              title={
+                <>
+                  Smart support,{" "}
+                  <span className="bg-brand-gradient bg-clip-text text-transparent">
+                    answered properly
+                  </span>
+                </>
+              }
+              lede="Most questions have a straight answer. Here are the ones we get asked most — if yours is not here, the form above reaches a person, not a queue."
+            />
+
+            <dl className="mt-8 space-y-5">
+              {supportAnswers.map((item) => (
+                <div key={item.q} className="border-l-2 border-primary/25 pl-4">
+                  <dt className="text-sm font-semibold text-foreground">{item.q}</dt>
+                  <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SupportIllustration />
+          </motion.div>
         </div>
       </Section>
     </div>
