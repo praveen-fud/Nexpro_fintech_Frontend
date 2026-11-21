@@ -2,6 +2,8 @@ import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
   ArrowRight,
+  Building2,
+  UserRound,
   CreditCard,
   Smartphone,
   Landmark,
@@ -17,6 +19,8 @@ import { WalletCard } from "@/components/shared/wallet-card"
 import { AuroraBackground } from "@/components/shared/aurora-background"
 import { TiltCard } from "@/components/shared/tilt-card"
 import { routes } from "@/lib/routes"
+import { platforms, services } from "@/content/catalog"
+import { CatalogCard, FeatureList, SectionHeading, StatusPill } from "./marketing-ui"
 import { cn } from "@/lib/utils"
 
 const fundingMethods = [
@@ -96,6 +100,32 @@ const faqs = [
   {
     q: "Is this platform processing real payments today?",
     a: "This environment is a product preview. No real banking, UPI, or card processing is connected yet — the experience simulates the full workflow end-to-end.",
+  },
+]
+
+
+const audiences = [
+  {
+    icon: Building2,
+    title: "For businesses",
+    lede: "Collect, pay out and reconcile without stitching together a bank statement and a spreadsheet.",
+    points: [
+      "Collections that identify the payer automatically",
+      "Bulk payouts with per-recipient status",
+      "Role-based access for your whole team",
+      "APIs and webhooks when you would rather build your own interface",
+    ],
+  },
+  {
+    icon: UserRound,
+    title: "For individuals",
+    lede: "One verified identity and one balance that reaches everything you need to pay for.",
+    points: [
+      "Fund your wallet by card, UPI or bank transfer",
+      "Move money back out to a verified bank account",
+      "Fees shown before you commit, never after",
+      "A full, exportable history of everything you have done",
+    ],
   },
 ]
 
@@ -208,6 +238,109 @@ export function LandingPage() {
                 </div>
                 <p className="mt-4 text-base font-semibold text-foreground">{method.title}</p>
                 <p className="mt-1.5 text-sm text-muted-foreground">{method.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading
+            eyebrow="Our products"
+            title="Core products to build your financial operations on"
+            lede="Take one or several. They share one identity, one balance and one ledger — so adding the next does not mean onboarding again."
+          />
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {platforms.map((platform, i) => (
+              <CatalogCard key={platform.slug} entry={platform} index={i} />
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Button variant="outline" size="lg" className="h-11 px-6" asChild>
+              <Link to={routes.marketing.products}>
+                Explore all products
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-card py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading
+            eyebrow="Our services"
+            title="Built for payments, automation and growth"
+            lede="Two of these work today. The rest are listed so you can see where we are going — each launches when its licence or partner is in place, not before."
+          />
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, i) => {
+              const Icon = service.icon
+              return (
+                <motion.div
+                  key={`${service.category}-${service.slug}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.35, delay: Math.min(i * 0.04, 0.25) }}
+                  className="flex items-start gap-3 rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Icon className="size-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">{service.name}</p>
+                      <StatusPill status={service.status} />
+                    </div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      {service.tagline}
+                    </p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+          <div className="mt-10 text-center">
+            <Button size="lg" className="h-11 px-6" asChild>
+              <Link to={routes.marketing.services}>
+                See all services
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading
+            eyebrow="Who it is for"
+            title="The same platform, from two directions"
+          />
+          <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            {audiences.map((audience, i) => (
+              <motion.div
+                key={audience.title}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="surface-mint rounded-2xl border border-border p-7"
+              >
+                <span className="flex size-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-sm shadow-primary/25">
+                  <audience.icon className="size-5" />
+                </span>
+                <h3 className="mt-5 font-heading text-lg font-semibold text-foreground">
+                  {audience.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {audience.lede}
+                </p>
+                <div className="mt-5 border-t border-border/60 pt-5">
+                  <FeatureList items={audience.points} />
+                </div>
               </motion.div>
             ))}
           </div>
