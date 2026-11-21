@@ -15,6 +15,30 @@ import { apiClient, ApiError } from "@/lib/api-client"
 import { useAuth } from "@/features/auth/auth-context"
 import { routes } from "@/lib/routes"
 
+// Mirrors _COMMON_PASSWORDS in Backend/app/schemas/auth.py.
+const COMMON_PASSWORDS = new Set([
+  "password",
+  "password1",
+  "password123",
+  "passw0rd",
+  "12345678",
+  "123456789",
+  "1234567890",
+  "qwerty123",
+  "qwertyuiop",
+  "letmein1",
+  "iloveyou",
+  "admin123",
+  "welcome1",
+  "welcome123",
+  "abc12345",
+  "football",
+  "monkey123",
+  "nexpro123",
+  "changeme",
+  "secret123",
+])
+
 const signUpSchema = z
   .object({
     fullName: z.string().min(2, "Enter your full name"),
@@ -22,7 +46,20 @@ const signUpSchema = z
     mobileNumber: z
       .string()
       .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    // Mirrors the server policy in Backend/app/schemas/auth.py. Keep the two
+    // in step: anything only the server rejects shows up as a form-level
+    // error after submit instead of inline as the user types.
+    password: z
+      .string()
+      .min(10, "Password must be at least 10 characters")
+      .max(128, "Password must be at most 128 characters")
+      .refine((v) => !COMMON_PASSWORDS.has(v.toLowerCase()), "That password is too common — choose something less guessable")
+      .refine((v) => !/^\d+$/.test(v), "Add letters, not just numbers")
+      .refine(
+        (v) =>
+          [/[a-z]/, /[A-Z]/, /\d/, /[^a-zA-Z0-9]/].filter((re) => re.test(v)).length >= 3,
+        "Mix upper case, lower case, and numbers or symbols",
+      ),
     confirmPassword: z.string(),
     acceptedTerms: z.boolean().refine((v) => v, "You must accept the Terms & Conditions"),
   })
