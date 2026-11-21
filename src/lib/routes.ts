@@ -4,6 +4,24 @@ export const routes = {
   login: "/login",
   payLink: (token: string) => `/pay/${token}`,
 
+  /** Public marketing site. */
+  marketing: {
+    services: "/services",
+    products: "/products",
+    product: (slug: string) => `/products/${slug}`,
+    about: "/about",
+    contact: "/contact",
+  },
+
+  /** Published policies. Linked from the footer of every public page. */
+  legal: {
+    terms: "/terms",
+    privacy: "/privacy",
+    governance: "/governance",
+    cookies: "/cookies",
+    grievance: "/grievance-redressal",
+  },
+
   app: {
     root: "/app",
     dashboard: "/app",

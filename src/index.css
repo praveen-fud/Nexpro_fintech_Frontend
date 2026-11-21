@@ -60,6 +60,7 @@
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-warning-surface: var(--warning-surface);
+  --color-warning-strong: var(--warning-strong);
   --color-error: var(--error);
   --color-error-foreground: var(--error-foreground);
   --color-error-surface: var(--error-surface);
@@ -156,6 +157,9 @@
   --warning: #f79009;
   --warning-foreground: #ffffff;
   --warning-surface: #fffaeb;
+  /* Text colour for use ON --warning-surface (the white foreground above is
+     for the solid --warning fill and is invisible on the tint). */
+  --warning-strong: #93370d;
   --error: #f04438;
   --error-foreground: #ffffff;
   --error-surface: #fef3f2;
@@ -208,6 +212,7 @@
   --warning: #f79009;
   --warning-foreground: #ffffff;
   --warning-surface: #3a2608;
+  --warning-strong: #fcd34d;
   --error: #f04438;
   --error-foreground: #ffffff;
   --error-surface: #3a1512;

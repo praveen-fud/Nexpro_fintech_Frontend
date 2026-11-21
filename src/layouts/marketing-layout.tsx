@@ -1,73 +1,213 @@
-import { useMemo, useState } from "react"
-import { Link, Outlet, useLocation } from "react-router-dom"
-import { Menu, X } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom"
+import { ChevronDown, Menu, X } from "lucide-react"
 import { Logo } from "@/components/shared/logo"
 import { Button } from "@/components/ui/button"
 import { routes } from "@/lib/routes"
+import { cn } from "@/lib/utils"
+import { productGroups, productsByGroup } from "@/content/catalog"
 
-const navLinks = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Security", href: "#security" },
-  { label: "FAQ", href: "#faq" },
+const primaryNav = [
+  { label: "Services", to: routes.marketing.services },
+  { label: "About", to: routes.marketing.about },
+  { label: "Contact", to: routes.marketing.contact },
 ]
 
+function ProductsMenu({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <div className="grid gap-x-8 gap-y-6 md:grid-cols-3">
+      {productGroups.map((group) => (
+        <div key={group.id}>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
+            {group.label}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{group.blurb}</p>
+          <ul className="mt-3 space-y-1">
+            {productsByGroup(group.id).map((product) => {
+              const Icon = product.icon
+              return (
+                <li key={product.slug}>
+                  <Link
+                    to={routes.marketing.product(product.slug)}
+                    onClick={onNavigate}
+                    className="group flex items-start gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-secondary"
+                  >
+                    <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                      <Icon className="size-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-foreground">{product.name}</span>
+                        {product.status === "coming-soon" && (
+                          <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                            Soon
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                        {product.tagline}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function MarketingLayout() {
-  const [open, setOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [productsOpen, setProductsOpen] = useState(false)
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false)
   const { pathname } = useLocation()
-  const isHome = pathname === routes.home
   const currentYear = useMemo(() => new Date().getFullYear(), [])
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Any navigation closes everything — otherwise the panel stays open over
+  // the page the user just asked for.
+  useEffect(() => {
+    setMobileOpen(false)
+    setProductsOpen(false)
+    setMobileProductsOpen(false)
+  }, [pathname])
+
+  // Escape closes the mega menu, and a click outside dismisses it.
+  useEffect(() => {
+    if (!productsOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setProductsOpen(false)
+    }
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setProductsOpen(false)
+    }
+    document.addEventListener("keydown", onKey)
+    document.addEventListener("mousedown", onClick)
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      document.removeEventListener("mousedown", onClick)
+    }
+  }, [productsOpen])
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "text-sm font-medium transition-colors",
+      isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+    )
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-md">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 lg:px-8">
-          <Link to={routes.home}>
+          <Link to={routes.home} aria-label="Nexpro Paytech home">
             <Logo />
           </Link>
 
-          {isHome && (
-            <nav className="hidden items-center gap-8 md:flex">
-              {navLinks.map((link) => (
-                <a key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden items-center gap-8 lg:flex" ref={menuRef}>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setProductsOpen((v) => !v)}
+                aria-expanded={productsOpen}
+                aria-haspopup="true"
+                className={cn(
+                  "flex items-center gap-1 text-sm font-medium transition-colors",
+                  pathname.startsWith("/products")
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Products
+                <ChevronDown
+                  className={cn("size-4 transition-transform", productsOpen && "rotate-180")}
+                />
+              </button>
 
-          <div className="hidden items-center gap-2 md:flex">
+              {productsOpen && (
+                <div className="absolute left-1/2 top-full z-50 mt-4 w-[min(56rem,90vw)] -translate-x-1/2 rounded-2xl border border-border bg-popover p-6 shadow-xl shadow-foreground/5">
+                  <ProductsMenu onNavigate={() => setProductsOpen(false)} />
+                  <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                    <p className="text-xs text-muted-foreground">
+                      Services marked “Soon” are not yet available to transact.
+                    </p>
+                    <Link
+                      to={routes.marketing.products}
+                      className="text-sm font-medium text-primary hover:underline"
+                    >
+                      View all products
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {primaryNav.map((link) => (
+              <NavLink key={link.to} to={link.to} className={navLinkClass}>
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="hidden items-center gap-2 lg:flex">
             <Button variant="ghost" asChild>
               <Link to={routes.login}>Sign In</Link>
             </Button>
             <Button asChild>
-              <Link to={routes.signUp}>Create Account</Link>
+              <Link to={routes.signUp}>Get Started</Link>
             </Button>
           </div>
 
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
         </div>
 
-        {open && (
-          <div className="border-t border-border px-4 py-4 md:hidden">
-            <nav className="flex flex-col gap-3">
-              {isHome &&
-                navLinks.map((link) => (
-                  <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="text-sm font-medium text-muted-foreground">
-                    {link.label}
-                  </a>
-                ))}
-              <div className="mt-2 flex flex-col gap-2">
+        {mobileOpen && (
+          <div className="max-h-[calc(100vh-5rem)] overflow-y-auto border-t border-border bg-card px-4 py-4 lg:hidden">
+            <nav className="flex flex-col gap-1">
+              <button
+                type="button"
+                onClick={() => setMobileProductsOpen((v) => !v)}
+                aria-expanded={mobileProductsOpen}
+                className="flex items-center justify-between rounded-lg px-2 py-2.5 text-sm font-medium text-foreground"
+              >
+                Products
+                <ChevronDown
+                  className={cn("size-4 transition-transform", mobileProductsOpen && "rotate-180")}
+                />
+              </button>
+              {mobileProductsOpen && (
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <ProductsMenu onNavigate={() => setMobileOpen(false)} />
+                </div>
+              )}
+
+              {primaryNav.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className="rounded-lg px-2 py-2.5 text-sm font-medium text-muted-foreground"
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+
+              <div className="mt-3 flex flex-col gap-2">
                 <Button variant="outline" asChild>
-                  <Link to={routes.login} onClick={() => setOpen(false)}>
-                    Sign In
-                  </Link>
+                  <Link to={routes.login}>Sign In</Link>
                 </Button>
                 <Button asChild>
-                  <Link to={routes.signUp} onClick={() => setOpen(false)}>
-                    Create Account
-                  </Link>
+                  <Link to={routes.signUp}>Get Started</Link>
                 </Button>
               </div>
             </nav>
@@ -79,64 +219,104 @@ export function MarketingLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border bg-card">
-        <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="col-span-2 lg:col-span-1">
-              <Logo />
-              <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-                A modern, secure platform for funding and managing your wallet.
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Product</p>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#how-it-works" className="hover:text-foreground">
-                    How it works
-                  </a>
-                </li>
-                <li>
-                  <a href="#security" className="hover:text-foreground">
-                    Security
-                  </a>
-                </li>
-                <li>
-                  <a href="#faq" className="hover:text-foreground">
-                    FAQ
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Company</p>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link to={routes.login} className="hover:text-foreground">
-                    Sign In
-                  </Link>
-                </li>
-                <li>
-                  <Link to={routes.signUp} className="hover:text-foreground">
-                    Create Account
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Legal</p>
-              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                <li>Terms &amp; Conditions</li>
-                <li>Privacy Policy</li>
-              </ul>
-            </div>
+      <SiteFooter year={currentYear} />
+    </div>
+  )
+}
+
+function SiteFooter({ year }: { year: number }) {
+  return (
+    <footer className="border-t border-border bg-card">
+      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="sm:col-span-2">
+            <Logo />
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              Nexpro Paytech builds payment infrastructure that is clear about what it does with
+              your money — every balance derived from an auditable ledger, every fee shown before
+              you commit.
+            </p>
           </div>
-          <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; {currentYear} Nexpro Paytech. All rights reserved.</p>
-            <p>Nexpro Paytech is a product demonstration environment. No real funds are processed.</p>
+
+          <div>
+            <p className="font-heading text-sm font-semibold text-foreground">Products</p>
+            <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+              {productGroups.map((group) => (
+                <li key={group.id}>
+                  <Link to={routes.marketing.products} className="hover:text-foreground">
+                    {group.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link to={routes.marketing.services} className="hover:text-foreground">
+                  All services
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-heading text-sm font-semibold text-foreground">Company</p>
+            <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+              <li>
+                <Link to={routes.marketing.about} className="hover:text-foreground">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.marketing.contact} className="hover:text-foreground">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.legal.governance} className="hover:text-foreground">
+                  Governance
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.signUp} className="hover:text-foreground">
+                  Get started
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-heading text-sm font-semibold text-foreground">Policies</p>
+            <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+              <li>
+                <Link to={routes.legal.terms} className="hover:text-foreground">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.legal.privacy} className="hover:text-foreground">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.legal.cookies} className="hover:text-foreground">
+                  Cookie Notice
+                </Link>
+              </li>
+              <li>
+                <Link to={routes.legal.grievance} className="hover:text-foreground">
+                  Grievance Redressal
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
-      </footer>
-    </div>
+
+        <div className="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {year} Nexpro Paytech. All rights reserved.</p>
+          <p className="max-w-xl sm:text-right">
+            Services shown as “Coming soon” are not yet available. Regulated services will launch
+            only once the relevant authorisation or partner arrangement is in place.
+          </p>
+        </div>
+      </div>
+    </footer>
   )
 }

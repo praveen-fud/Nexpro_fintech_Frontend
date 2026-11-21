@@ -11,6 +11,26 @@ import { AdminLayout } from "@/layouts/admin-layout"
 import { routes } from "@/lib/routes"
 
 const LandingPage = lazy(() => import("@/features/marketing/landing-page"))
+const ServicesMarketingPage = lazy(() => import("@/features/marketing/services-page"))
+const ProductsPage = lazy(() => import("@/features/marketing/products-page"))
+const ProductDetailPage = lazy(() => import("@/features/marketing/product-detail-page"))
+const AboutPage = lazy(() => import("@/features/marketing/about-page"))
+const ContactPage = lazy(() => import("@/features/marketing/contact-page"))
+const TermsPage = lazy(() =>
+  import("@/features/marketing/legal-page").then((m) => ({ default: m.TermsPage })),
+)
+const PrivacyPage = lazy(() =>
+  import("@/features/marketing/legal-page").then((m) => ({ default: m.PrivacyPage })),
+)
+const CookiePage = lazy(() =>
+  import("@/features/marketing/legal-page").then((m) => ({ default: m.CookiePage })),
+)
+const GovernancePage = lazy(() =>
+  import("@/features/marketing/legal-page").then((m) => ({ default: m.GovernancePage })),
+)
+const GrievancePage = lazy(() =>
+  import("@/features/marketing/legal-page").then((m) => ({ default: m.GrievancePage })),
+)
 const SignUpPage = lazy(() => import("@/features/auth/sign-up-page"))
 const LoginPage = lazy(() => import("@/features/auth/login-page"))
 const PayLinkPage = lazy(() => import("@/features/funding/pay-link-page"))
@@ -71,6 +91,16 @@ export default function App() {
     <Routes>
       <Route element={<MarketingLayout />}>
         <Route path={routes.home} element={<Page><LandingPage /></Page>} />
+        <Route path={routes.marketing.services} element={<Page><ServicesMarketingPage /></Page>} />
+        <Route path={routes.marketing.products} element={<Page><ProductsPage /></Page>} />
+        <Route path="/products/:slug" element={<Page><ProductDetailPage /></Page>} />
+        <Route path={routes.marketing.about} element={<Page><AboutPage /></Page>} />
+        <Route path={routes.marketing.contact} element={<Page><ContactPage /></Page>} />
+        <Route path={routes.legal.terms} element={<Page><TermsPage /></Page>} />
+        <Route path={routes.legal.privacy} element={<Page><PrivacyPage /></Page>} />
+        <Route path={routes.legal.cookies} element={<Page><CookiePage /></Page>} />
+        <Route path={routes.legal.governance} element={<Page><GovernancePage /></Page>} />
+        <Route path={routes.legal.grievance} element={<Page><GrievancePage /></Page>} />
       </Route>
 
       <Route path={routes.signUp} element={<Page><SignUpPage /></Page>} />
