@@ -1,0 +1,50 @@
+# Static host for the built SPA.
+#
+# The important line is try_files. The build emits a real index.html per
+# route (dist/services/index.html, dist/products/payouts/index.html, …) so
+# that social scrapers and non-JS crawlers get that page's own title,
+# description and preview image. A plain "serve everything as /index.html"
+# SPA fallback would throw all of that away and hand every URL the home
+# page's metadata, so the order below matters:
+#
+#   1. $uri            — a real file (assets, og-image.jpg, sitemap.xml)
+#   2. $uri/index.html — the pre-rendered page for that route
+#   3. /index.html     — client-side routing for anything else
+#
+# Unknown URLs fall through to step 3 but are returned with a 404 status
+# (see error_page below), so React renders the branded 404 page while search
+# engines still see a genuine 404 rather than a soft-404 answering 200.
+
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+
+    # Railway terminates TLS at the edge; this is plain HTTP behind it.
+    absolute_redirect off;
+
+    location / {
+        try_files $uri $uri/index.html /index.html;
+    }
+
+    # Hashed assets are immutable; everything else must revalidate so a
+    # deploy is picked up immediately.
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+    }
+
+    location = /sitemap.xml { add_header Cache-Control "public, max-age=3600"; }
+    location = /robots.txt  { add_header Cache-Control "public, max-age=3600"; }
+    location = /llms.txt    { add_header Cache-Control "public, max-age=3600"; }
+
+    error_page 404 /index.html;
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
+    gzip_min_length 1024;
+}
