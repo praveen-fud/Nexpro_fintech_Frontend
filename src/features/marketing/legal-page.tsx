@@ -2,6 +2,9 @@ import { Fragment, type ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { AlertTriangle } from "lucide-react"
 import { routes } from "@/lib/routes"
+import { Seo } from "@/components/shared/seo"
+import { breadcrumbSchema } from "@/lib/structured-data"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { cn } from "@/lib/utils"
 import {
   cookieDocument,
@@ -45,13 +48,23 @@ const legalNav = [
 ]
 
 export function LegalPage({ document }: { document: LegalDocument }) {
+  const path = legalNav.find((item) => item.label === document.title)?.to ?? "/"
+  const trail = [
+    { label: "Home", path: "/" },
+    { label: document.title, path },
+  ]
+
   return (
     <div>
+      <Seo
+        title={document.title}
+        description={document.lede.slice(0, 158)}
+        path={path}
+        jsonLd={[breadcrumbSchema(trail)]}
+      />
       <section className="border-b border-border bg-hero-mesh">
         <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-            Policies
-          </p>
+          <Breadcrumbs trail={trail} className="mb-5" />
           <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {document.title}
           </h1>

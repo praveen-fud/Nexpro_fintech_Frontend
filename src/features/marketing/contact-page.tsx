@@ -12,6 +12,10 @@ import { IconInput } from "@/components/shared/icon-input"
 import { AuroraBackground } from "@/components/shared/aurora-background"
 import { apiClient, ApiError } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
+import { company } from "@/config/site"
+import { Seo } from "@/components/shared/seo"
+import { breadcrumbSchema } from "@/lib/structured-data"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { Section } from "./marketing-ui"
 
 const contactSchema = z.object({
@@ -28,15 +32,41 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>
 
+/**
+ * Only the channels we can actually publish. A contact page listing
+ * "+91 00000 00000" tells a visitor the site is unfinished more loudly than
+ * leaving the row out does — so unset values are omitted entirely, and the
+ * form remains the route that always works.
+ */
 const channels = [
-  {
+  company.email && {
     icon: Mail,
     label: "Email",
-    value: "business@nexpropaytech.com",
-    href: "mailto:business@nexpropaytech.com",
+    value: company.email,
+    href: `mailto:${company.email}`,
   },
-  { icon: Phone, label: "Phone", value: "+91 00000 00000", href: "tel:+910000000000" },
-  { icon: MapPin, label: "Registered office", value: "To be confirmed before launch" },
+  company.phone && {
+    icon: Phone,
+    label: "Phone",
+    value: company.phone,
+    href: `tel:${company.phone.replace(/[^+\d]/g, "")}`,
+  },
+  company.address && {
+    icon: MapPin,
+    label: "Registered office",
+    value: [
+      company.address.street,
+      company.address.locality,
+      `${company.address.region} ${company.address.postalCode}`,
+    ]
+      .filter(Boolean)
+      .join(", "),
+  },
+].filter(Boolean) as { icon: typeof Mail; label: string; value: string; href?: string }[]
+
+const CONTACT_TRAIL = [
+  { label: "Home", path: "/" },
+  { label: "Contact", path: "/contact" },
 ]
 
 export function ContactPage() {
@@ -75,6 +105,13 @@ export function ContactPage() {
 
   return (
     <div>
+      <Seo
+        title="Contact"
+        description="Tell us what payment flow you need and we will say which parts of Nexpro Paytech exist today and which are waiting on a partner."
+        path="/contact"
+        jsonLd={[breadcrumbSchema(CONTACT_TRAIL)]}
+      />
+
       <section className="relative overflow-hidden bg-hero-mesh">
         <AuroraBackground tone="light" interactive={false} className="opacity-70" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-20">
@@ -84,9 +121,7 @@ export function ContactPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <p className="mb-4 inline-flex items-center rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-              Contact
-            </p>
+            <Breadcrumbs trail={CONTACT_TRAIL} className="mb-5" />
             <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               Tell us what you’re{" "}
               <span className="bg-brand-gradient bg-clip-text text-transparent">trying to build.</span>
@@ -258,9 +293,13 @@ export function ContactPage() {
 
           <div className="space-y-6">
             <div className="bg-card-aurora relative overflow-hidden rounded-2xl p-7 text-white">
-              <h3 className="font-heading text-lg font-semibold">Reach us directly</h3>
+              <h3 className="font-heading text-lg font-semibold">
+                {channels.length > 0 ? "Reach us directly" : "How we reply"}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-white/70">
-                Prefer not to use a form? These reach the same team.
+                {channels.length > 0
+                  ? "Prefer not to use a form? These reach the same team."
+                  : "We answer by email, to the address you give us. Expect a reply within two working days."}
               </p>
               <ul className="mt-6 space-y-5">
                 {channels.map((channel) => {

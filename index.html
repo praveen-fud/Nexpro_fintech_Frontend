@@ -1,27 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#D09036" />
-    <title>Nexpro Paytech — Your money. Managed simply.</title>
+    <meta name="theme-color" content="#0b5036" />
+    <meta name="application-name" content="Nexpro Paytech" />
+    <meta name="apple-mobile-web-app-title" content="Nexpro Paytech" />
+
+    <!--
+      These are defaults only. The build (see the nexpro-seo-assets plugin in
+      vite.config.ts) rewrites the title, description, canonical and social
+      tags per route and emits a matching index.html for each one, so social
+      scrapers — which never run our JavaScript — read the right values.
+      React sets the identical tags at runtime for client-side navigation.
+    -->
+    <title>Nexpro Paytech</title>
     <meta
       name="description"
-      content="Fund your wallet securely through supported payment methods and manage your financial services from one simple platform."
+      content="Fund your wallet by credit card, UPI or bank transfer and manage your money from one auditable ledger. Payment infrastructure built for India."
     />
-    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nexpropaytech.com/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Nexpro Paytech" />
-    <meta property="og:title" content="Nexpro Paytech — Your money. Managed simply." />
+    <meta property="og:title" content="Nexpro Paytech" />
     <meta
       property="og:description"
-      content="Fund your wallet securely through supported payment methods and manage your financial services from one simple platform."
+      content="Fund your wallet by credit card, UPI or bank transfer and manage your money from one auditable ledger. Payment infrastructure built for India."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:url" content="https://nexpropaytech.com/" />
+    <meta property="og:image" content="https://nexpropaytech.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nexpro Paytech — payment infrastructure for India" />
+    <meta property="og:locale" content="en_IN" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nexpro Paytech" />
+    <meta
+      name="twitter:description"
+      content="Fund your wallet by credit card, UPI or bank transfer and manage your money from one auditable ledger. Payment infrastructure built for India."
+    />
+    <meta name="twitter:image" content="https://nexpropaytech.com/og-image.jpg" />
   </head>
   <body>
     <div id="root"></div>

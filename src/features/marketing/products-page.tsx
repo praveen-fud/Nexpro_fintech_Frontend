@@ -4,12 +4,27 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AuroraBackground } from "@/components/shared/aurora-background"
 import { routes } from "@/lib/routes"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
+import { Seo } from "@/components/shared/seo"
+import { breadcrumbSchema } from "@/lib/structured-data"
 import { platforms, productGroups, productsByGroup } from "@/content/catalog"
 import { CatalogCard, FeatureList, Section, SectionHeading, StatusPill } from "./marketing-ui"
+
+const PRODUCTS_TRAIL = [
+  { label: "Home", path: "/" },
+  { label: "Products", path: "/products" },
+]
 
 export function ProductsPage() {
   return (
     <div>
+      <Seo
+        title="Products"
+        description="Payouts, collections, payment orchestration, verification and travel — the products Nexpro Paytech offers, and which are live today."
+        path="/products"
+        jsonLd={[breadcrumbSchema(PRODUCTS_TRAIL)]}
+      />
+
       <section className="relative overflow-hidden bg-hero-mesh">
         <AuroraBackground tone="light" interactive={false} className="opacity-70" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 lg:px-8 lg:py-24">
@@ -19,9 +34,7 @@ export function ProductsPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <p className="mb-4 inline-flex items-center rounded-full border border-border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-              Products
-            </p>
+            <Breadcrumbs trail={PRODUCTS_TRAIL} className="mb-5" />
             <h1 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               The pieces you need,{" "}
               <span className="bg-brand-gradient bg-clip-text text-transparent">

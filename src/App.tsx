@@ -5,10 +5,16 @@ import { ProtectedRoute } from "@/app/guards/protected-route"
 import { KycGate } from "@/app/guards/kyc-gate"
 import { RequireApprovedKyc } from "@/app/guards/require-approved-kyc"
 import { MarketingLayout } from "@/layouts/marketing-layout"
-import { AppLayout } from "@/layouts/app-layout"
-import { OperationsLayout } from "@/layouts/operations-layout"
-import { AdminLayout } from "@/layouts/admin-layout"
 import { routes } from "@/lib/routes"
+
+// Signed-in shells: loaded with the area they belong to, never on a public page.
+const AppLayout = lazyLayout(() => import("@/layouts/app-layout").then((m) => ({ default: m.AppLayout })))
+const OperationsLayout = lazyLayout(() =>
+  import("@/layouts/operations-layout").then((m) => ({ default: m.OperationsLayout })),
+)
+const AdminLayout = lazyLayout(() =>
+  import("@/layouts/admin-layout").then((m) => ({ default: m.AdminLayout })),
+)
 
 const LandingPage = lazy(() => import("@/features/marketing/landing-page"))
 const ServicesMarketingPage = lazy(() => import("@/features/marketing/services-page"))
@@ -16,6 +22,7 @@ const ProductsPage = lazy(() => import("@/features/marketing/products-page"))
 const ProductDetailPage = lazy(() => import("@/features/marketing/product-detail-page"))
 const AboutPage = lazy(() => import("@/features/marketing/about-page"))
 const ContactPage = lazy(() => import("@/features/marketing/contact-page"))
+const NotFoundPage = lazy(() => import("@/features/marketing/not-found-page"))
 const TermsPage = lazy(() =>
   import("@/features/marketing/legal-page").then((m) => ({ default: m.TermsPage })),
 )
@@ -75,6 +82,18 @@ const UserManagementPage = lazy(() => import("@/features/admin/user-management-p
  * (not Framer Motion) so the app-shell entry chunk doesn't eagerly pull in
  * the animation library — that stays code-split into the lazy page chunks
  * that actually use it. */
+/** Wraps a lazily-loaded layout in its own Suspense boundary. */
+function lazyLayout(loader: () => Promise<{ default: React.ComponentType }>) {
+  const Loaded = lazy(loader)
+  return function LazyLayout() {
+    return (
+      <Suspense fallback={<FullScreenLoader />}>
+        <Loaded />
+      </Suspense>
+    )
+  }
+}
+
 function Page({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   return (
@@ -101,6 +120,9 @@ export default function App() {
         <Route path={routes.legal.cookies} element={<Page><CookiePage /></Page>} />
         <Route path={routes.legal.governance} element={<Page><GovernancePage /></Page>} />
         <Route path={routes.legal.grievance} element={<Page><GrievancePage /></Page>} />
+        {/* Anything unmatched renders the 404 inside the marketing shell, so
+            a mistyped URL still has the site's nav and footer to escape by. */}
+        <Route path="*" element={<Page><NotFoundPage /></Page>} />
       </Route>
 
       <Route path={routes.signUp} element={<Page><SignUpPage /></Page>} />

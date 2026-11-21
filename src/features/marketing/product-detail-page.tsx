@@ -1,9 +1,12 @@
 import { Link, Navigate, useParams } from "react-router-dom"
 import { motion } from "framer-motion"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AuroraBackground } from "@/components/shared/aurora-background"
 import { routes } from "@/lib/routes"
+import { Seo } from "@/components/shared/seo"
+import { breadcrumbSchema, serviceSchema } from "@/lib/structured-data"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { findProduct, productGroups, productsByGroup } from "@/content/catalog"
 import { CatalogCard, FeatureList, Section, SectionHeading, StatusPill } from "./marketing-ui"
 
@@ -21,19 +24,28 @@ export function ProductDetailPage() {
   const Icon = product.icon
   const group = productGroups.find((g) => g.id === product.group)
   const related = productsByGroup(product.group).filter((p) => p.slug !== product.slug)
+  const path = routes.marketing.product(product.slug)
+  const trail = [
+    { label: "Home", path: "/" },
+    { label: "Products", path: routes.marketing.products },
+    { label: product.name, path },
+  ]
 
   return (
     <div>
+      <Seo
+        title={product.name}
+        description={`${product.tagline}. ${product.description}`.slice(0, 158)}
+        path={path}
+        jsonLd={[
+          breadcrumbSchema(trail),
+          serviceSchema({ name: product.name, description: product.description, path }),
+        ]}
+      />
       <section className="relative overflow-hidden bg-hero-mesh">
         <AuroraBackground tone="light" interactive={false} className="opacity-70" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 lg:px-8 lg:py-20">
-          <Link
-            to={routes.marketing.products}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="size-3.5" />
-            All products
-          </Link>
+          <Breadcrumbs trail={trail} />
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}

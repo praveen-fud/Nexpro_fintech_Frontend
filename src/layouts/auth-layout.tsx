@@ -51,9 +51,13 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           className="relative z-10 flex flex-1 flex-col items-start justify-center gap-10 py-12"
         >
           <motion.div variants={panelItem} className="max-w-md">
-            <h1 className="text-4xl font-semibold tracking-tight text-white">
+            {/* Decorative brand copy beside the form. The page's own heading
+                (“Create your account” / “Welcome back”) is the real h1, so
+                this is a <p> — two h1s on one page is ambiguous for screen
+                readers and for search engines. */}
+            <p className="font-heading text-4xl font-semibold tracking-tight text-white">
               Your money. <br /> Managed simply.
-            </h1>
+            </p>
             <p className="mt-4 text-base text-white/70">
               Fund your wallet securely and track every rupee from request to approval —
               nothing ambiguous, nothing hidden.

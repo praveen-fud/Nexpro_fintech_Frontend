@@ -19,6 +19,9 @@ import { WalletCard } from "@/components/shared/wallet-card"
 import { AuroraBackground } from "@/components/shared/aurora-background"
 import { TiltCard } from "@/components/shared/tilt-card"
 import { routes } from "@/lib/routes"
+import { company } from "@/config/site"
+import { Seo } from "@/components/shared/seo"
+import { faqSchema, organizationSchema, websiteSchema } from "@/lib/structured-data"
 import { platforms, services } from "@/content/catalog"
 import { CatalogCard, FeatureList, SectionHeading, StatusPill } from "./marketing-ui"
 import { cn } from "@/lib/utils"
@@ -132,6 +135,13 @@ const audiences = [
 export function LandingPage() {
   return (
     <div>
+      <Seo
+        title={company.name}
+        description="Fund your wallet by credit card, UPI or bank transfer and manage your money from one auditable ledger. Payment infrastructure built for India."
+        path="/"
+        jsonLd={[organizationSchema(), websiteSchema(), faqSchema(faqs)]}
+      />
+
       <section className="relative overflow-hidden bg-hero-mesh">
         <AuroraBackground tone="light" interactive={false} className="opacity-80" />
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-4 py-16 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-24">

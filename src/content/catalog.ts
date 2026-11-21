@@ -21,6 +21,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react"
+import { productSlugs } from "@/config/seo-routes"
 
 /**
  * The public catalogue — the single source of truth for what Nexpro Paytech
@@ -558,5 +559,22 @@ export const servicesByCategory = (category: ServiceCategory) =>
   services.filter((s) => s.category === category)
 
 export const findProduct = (slug: string) => products.find((p) => p.slug === slug)
+
+// Drift guard. The SEO route manifest cannot import this module (it is read
+// in Node at build time, where the icon library is not available), so the
+// product slugs exist in both places. If they diverge, a product silently
+// drops out of the sitemap — so say so loudly in development.
+if (import.meta.env.DEV) {
+  const inCatalog = products.map((p) => p.slug).sort()
+  const inManifest: string[] = [...productSlugs].sort()
+  const missing = inCatalog.filter((slug) => !inManifest.includes(slug))
+  const extra = inManifest.filter((slug) => !inCatalog.includes(slug))
+  if (missing.length || extra.length) {
+    console.error(
+      "[catalog] src/config/seo-routes.ts is out of sync with the product catalogue.",
+      { missingFromManifest: missing, notInCatalog: extra },
+    )
+  }
+}
 
 export const findService = (slug: string) => services.find((s) => s.slug === slug)
